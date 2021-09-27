@@ -1,0 +1,27 @@
+bouquet/_helpers/
+org-tanabe-ssl-certs/
+ImeconportalAPI/node_modules/
+bouquet/DS_Store
+bouquet/node_modules
+bouquet/dist
+
+#firebase
+bouquet/src/firebaseconfig.json
+
+
+# local env files
+bouquet/.env
+bouquet/.env.local
+bouquet/.env.*.local
+
+# Log files
+bouquet/npm-debug.log*
+bouquet/yarn-debug.log*
+bouquet/yarn-error.log*
+bouquet/pnpm-debug.log*
+
+# Editor directories and files
+bouquet/.idea
+bouquet/.vscode
+bouquet/*.suo
+
