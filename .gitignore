@@ -1,18 +1,19 @@
-bouquet/_helpers/
-org-tanabe-ssl-certs/
-ImeconportalAPI/node_modules/
-bouquet/DS_Store
+bouquet/_helpers
+org-tanabe-ssl-cert/
+ImeconportalAPI/node_modules
+bouquet/.DS_Store
 bouquet/node_modules
 bouquet/dist
+.DS_Store
 
 #firebase
 bouquet/src/firebaseconfig.json
 
 
 # local env files
-bouquet/.env
-bouquet/.env.local
-bouquet/.env.*.local
+.env
+.env.local
+.env.*.local
 
 # Log files
 bouquet/npm-debug.log*
