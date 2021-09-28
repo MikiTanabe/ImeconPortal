@@ -1,0 +1,60 @@
+#docker-composeバージョン指定
+version: "3.8"
+
+volumes:
+ #Bouquet node_module用volume
+ vue-cli-node-volume:
+ #ImeconPortalAPI node_module用volume
+ imp-backend-node-volume:
+
+services:
+#コンテナ詳細
+ https-portal:
+  image: steveltn/https-portal:1
+  ports:
+    - '80:80'
+    - '443:443'
+  links:
+    - bouquet
+  restart: always
+  environment:
+    DOMAINS: 'bouquet.local.com -> http://bouquet:8081'
+    STAGE: local
+  #extra_hosts:
+  #  - 'bouquet.local.com:127.0.0.1'
+  volumes:
+    - ./org-tanabe-ssl-certs:/var/lib/https-portal
+ bouquet:
+  image: bouquet
+  build:
+   context: ./bouquet
+   #dockerfile: Dockerfile
+  container_name: bouquet
+  ports:
+  - 18081:8081
+  privileged: true
+  volumes:
+   #node_moduleを入れるボリューム
+   - vue-cli-node-volume:/app/node_modules:cached
+   #コンテナ内の指定ディレクトリをホスト側を同期
+   - ./bouquet/:/app/
+  #-it
+  stdin_open: true
+  tty: true
+  command: /bin/sh
+  depends_on: 
+  - imecon_portal_api
+ imecon_portal_api:
+  image: imecon_portal_api
+  build:
+   context: ./ImeconportalAPI
+  container_name: imeconPortalAPI
+  ports:
+  - 3000:3000
+  privileged: true
+  volumes:
+  - imp-backend-node-volume:/node_modules:cached
+  - ./ImeconportalAPI/:/usr/src/app/
+  stdin_open: true
+  tty: true
+  #command: /bin/sh

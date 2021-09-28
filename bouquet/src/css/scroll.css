@@ -1,0 +1,7 @@
+#title footer {
+    transition: .5s;
+}
+
+#title .hide{
+    transform: translateY(-100%);
+}
