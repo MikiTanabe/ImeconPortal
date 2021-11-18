@@ -1,0 +1,215 @@
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@300&Caveat:wght@600&family=Kosugi&display=swap');
+
+/* 色定義 */
+$annin-white: #f5f3f2;
+$vietnam-beige: #e7be99;
+$desert-gold: #d1ae15;
+
+/* ボタンデフォルトスタイルの削除 */
+button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    padding: 0;
+    appearance: none;
+    position: relative;
+}
+
+/* heder */
+header {
+    background-color: $vietnam-beige;
+    height: 65px;
+    font-family: 'M PLUS 1p', sans-serif;
+    width: 100%;
+}
+
+.header-logo {
+    height: 4em;
+}
+
+.header-logo img {
+    height: 100%;
+}
+
+body {
+    font-family: 'M PLUS 1p', sans-serif;
+}
+
+footer {
+    background-color: #b3b3ff;
+    height: 4em;
+    font-family: 'M PLUS 1p', sans-serif;
+    width: 100%;
+}
+
+header p {
+    color: $annin-white;
+}
+
+.container {
+    padding-top: 70px;
+    padding-bottom: 5em;
+}
+
+@media screen and (min-width:768px){
+    header {
+        height: 70px;
+    }
+
+    .container {
+        padding-top: 75px;
+    }
+}
+
+@media screen and (min-width:992px){
+    header {
+        height: 90px;
+    }
+
+    .container {
+        padding-top: 95px;
+    }
+}
+
+/* メニューボタン */
+.menuBtn {
+    background-color: $annin-white;
+    opacity : 50%;
+    height: 90px;
+    width: 100%;
+    margin: 0;
+}
+
+.menuBtn p {
+    color: black;
+    font-size: larger;
+    font-weight: bolder;
+}
+
+.menuBtn:hover {
+    opacity: 100%;
+}
+
+.menuBtnActive {
+    opacity: 100%;
+}
+.menuBtnActive::after {
+    content: '';
+    display: block;
+    width: inherit;
+    margin: 0 auto;
+    height: 5px;
+    background-color: $desert-gold;
+    position: absolute;
+    bottom: 0;
+    //left: 20px;
+}
+
+
+
+/** ボタン **/
+button:disabled {
+    background: lightgray;
+    color: gray;
+}
+
+/* 緑ボタン */
+.btn-green {
+    background: #236d46;
+    color: white;
+    border: solid 1px #236d46;
+}
+
+.btn-green :hover {
+    background: white;
+    color: #236d46;
+}
+
+/* グレーボタン */
+.btn-gray {
+    background: white;
+    color: gray;
+    border: solid 1px gray;
+}
+
+.btn-gray :hover {
+    background: lightgray;
+    border: solid 1px lightgray;
+    color: white;
+}
+
+/* 見出し要素 */
+#title h1 {
+    color: #882954;
+    font-family: 'M PLUS 1p', sans-serif;
+    font-weight: bold;
+    font-size: 1.4em;
+}
+
+#title h2 {
+    color: #882954;
+    font-family: 'M PLUS 1p', sans-serif;
+    font-size: 1.3em;
+    font-weight: bold;
+}
+
+#title h3 {
+    color: #882954;
+    font-family: 'M PLUS 1p', sans-serif;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+#title h4 {
+    color: #882954;
+    font-family: 'M PLUS 1p', sans-serif;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+#title h6 {
+    color: #882954;
+    font-family: 'M PLUS 1p', sans-serif;
+    font-size: 1em;
+    font-weight: bold;
+}
+
+/* 色指定 */
+.cl-darkpink {
+    color: #c73576;
+}
+
+/* リンク装飾 */
+.notice-link {
+    color: #c73576!important;
+    text-decoration: underline;
+}
+
+.notice-link:hover {
+    color: #eca0c2!important;
+    text-decoration: none;
+}
+
+.active {
+    color: black;
+}
+
+.active:hover {
+    color: dimgray;
+    text-decoration: none;
+}
+
+/* テーブル */
+.table-palepink th {
+    background-color: lavender;
+    font-weight: normal;
+}
+
+.table-palepink tr {
+    border-bottom: solid 1px dimgray;
+}
+
+.table-palepink td {
+    background-color: white;
+}

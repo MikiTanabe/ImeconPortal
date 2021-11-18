@@ -5,7 +5,7 @@
             <!-- イベントリスト -->
             <p>{{ igList.get('igId') }}</p>
             <p>{{ igList.get('name') }}</p>
-            <fb-login />
+            <fb-login ref="fbLogin" />
         </div>
     </div>
 </template>
@@ -14,7 +14,7 @@
     import FbLogin from '@/components/FbLogin.vue'
     
     //igList返却API
-    const url = 'http://localhost:3000/api/photo/list'
+    const url = 'https://imecon.portal.api/api/photo/list'
     export default {
         name: 'Top',
         components: {
@@ -22,28 +22,36 @@
         },
         data () {
             return {
-                igList: new Map()
+                igList: new Map(),
+                igId: null
             }
         },
         methods: {
             GetIGList: async function() {
                 return await fetch(url, {
-                                method: 'GET',
-                                mode: 'cors',
-                            }).then(async response => {
-                                if (!response.ok){
-                                    throw new Error (await response.text())
-                                }
-                                return response.json()
-                            }).catch(error => {
-                                console.log(error)
-                            })
+                    method: 'GET',
+                    mode: 'cors',
+                    credentials: 'include'
+                }).then(async response => {
+                    if (!response.ok){
+                        throw new Error (await response.text())
+                    }
+                    return response.json()
+                }).then(json => {
+                    this.igId = json.id
+                }).catch(error => {
+                    console.log(error)
+                })
             }
         },
-        created: async function () {
+        mounted: async function () {
             var igList = await this.GetIGList()
-            this.igList = ObjectParseMap(igList)
+            this.igList = igList != null
+                        ? ObjectParseMap(igList)
+                        : null;
             console.log(this.igList)
         }
     }
+    
+
 </script>

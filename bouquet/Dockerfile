@@ -22,6 +22,5 @@ RUN apk update && \
 
 #ENTRYPOINT ["/scripts/start.sh"]
 
-#CMD ["npm", "run", "serve"] npm run serve 実行
-
 EXPOSE 8081
+CMD ["npm", "run", "serve"]

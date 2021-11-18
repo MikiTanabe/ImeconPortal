@@ -18,7 +18,7 @@ services:
     - bouquet
   restart: always
   environment:
-    DOMAINS: 'bouquet.local.com -> http://bouquet:8081'
+    DOMAINS: 'bouquet.local.com -> http://bouquet:8081, imecon.portal.api -> http://imecon_portal_api:9229'
     STAGE: local
   #extra_hosts:
   #  - 'bouquet.local.com:127.0.0.1'
@@ -51,10 +51,11 @@ services:
   container_name: imeconPortalAPI
   ports:
   - 3000:3000
+  - 9229:9229
   privileged: true
   volumes:
   - imp-backend-node-volume:/node_modules:cached
   - ./ImeconportalAPI/:/usr/src/app/
   stdin_open: true
   tty: true
-  #command: /bin/sh
+  command: /bin/sh

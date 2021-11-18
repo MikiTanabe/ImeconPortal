@@ -2,13 +2,18 @@ FROM node:10
 
 WORKDIR /usr/src/app
 
-COPY pachakge*.json ./
+COPY . .
 
-RUN npm install
+#COPY pachakge*.json ./
 
+RUN npm install && \
+    npm install -g npm
+    
 #If want to build this project for production
 #RUN npm ci --only=production
 
-COPY . .
+#COPY . .
+
+EXPOSE 3000
 
 CMD ["node", "app.js"]

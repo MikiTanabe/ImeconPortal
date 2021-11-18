@@ -4,11 +4,14 @@
   "description": "This project Work for ImeconPortal.",
   "main": "app.js",
   "scripts": {
+    "start:debug": "node --inspect-brk=0.0.0.0:9229 app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "MikiTanabe",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "axios": "^0.24.0",
+    "express": "^4.17.1",
+    "firebase-admin": "^10.0.0"
   }
 }
