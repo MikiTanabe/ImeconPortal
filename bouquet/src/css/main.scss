@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@300&Caveat:wght@600&family=Kosugi&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Arvo&display=swap');
 
 /* 色定義 */
 $annin-white: #f5f3f2;
@@ -18,6 +19,8 @@ button {
 
 /* heder */
 header {
+    background: url('img/background-dia.png');
+    background-position: 50% 0%;
     background-color: $vietnam-beige;
     height: 65px;
     font-family: 'M PLUS 1p', sans-serif;
@@ -47,9 +50,9 @@ header p {
     color: $annin-white;
 }
 
-.container {
-    padding-top: 70px;
-    padding-bottom: 5em;
+.container-fluid {
+    padding-top: 100px;
+    padding-bottom: 50px;
 }
 
 @media screen and (min-width:768px){
@@ -142,16 +145,27 @@ button:disabled {
 /* 見出し要素 */
 #title h1 {
     color: #882954;
-    font-family: 'M PLUS 1p', sans-serif;
+    font-family: 'Arvo', 'M PLUS 1p', sans-serif;
     font-weight: bold;
     font-size: 1.4em;
 }
 
 #title h2 {
-    color: #882954;
-    font-family: 'M PLUS 1p', sans-serif;
+    font-family: 'Arvo', 'M PLUS 1p', sans-serif;
     font-size: 1.3em;
     font-weight: bold;
+    border-bottom:1px solid $desert-gold;
+}
+
+#title .title-gold {
+    color: $desert-gold;
+}
+
+#title .with-circle::before {
+    display: inline-block;
+    margin-right: 2px;
+    content: url('img/title-circle.svg');
+    vertical-align: middle;
 }
 
 #title h3 {
@@ -174,6 +188,8 @@ button:disabled {
     font-size: 1em;
     font-weight: bold;
 }
+
+
 
 /* 色指定 */
 .cl-darkpink {

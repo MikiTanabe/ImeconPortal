@@ -1,5 +1,6 @@
 const instagramApi = require("./functions/instagrmApi.js");
 const instaListRepository = require("./firestore/instaListRepository.js");
+const listUtil = require("./functions/listUtil.js");
 //ポート番号
 const PORT = 3000;
 
@@ -13,22 +14,32 @@ var app = express();
 //3000番ポートで待ち受け
 app.listen(PORT, () => { console.log("Node.js is listening to PORT: ${PORT}")});
 
-//InstagramAPIから投稿リストを返却する
-var igList = {
-    igId: "001",
-    name: "hanako"
-};
-
 /** Instagram投稿リストを返却する */
 app.get("/api/photo/list", async (req, res) => {
     try{
         const arrayName = await instaListRepository.getAllNameArray();
-        const content = await instagramApi.getIgList(arrayName);
-        //リクエスト元URLの設定    
+        const mediaList = await instagramApi.GetIgList(arrayName);
+        let resultList = new Array();
+        //リクエスト元URLの設定
         res.set({'Access-Control-Allow-Origin': URL});
         res.set({'Access-Control-Allow-Headers': 'X-Requested-With, Origin, X-Csrftoken, Content-Type, Accept'})
         res.set({'Access-Control-Allow-Credentials': 'true'})
-        res.json(content);
+        for(let medias of mediaList) {
+            if (medias != null){
+                for(let media of medias) {
+                    let result = {
+                        id: media.id,
+                        url: media.permlink,
+                        thumbnail_url: media.media_url,
+                        caption: media.caption,
+                        timestamp: media.timestamp
+                    }
+                    resultList.push(result);
+                }
+            }
+        }
+        listUtil.SortByTimestamp(resultList);
+        res.json(resultList);
     } catch (e) {
         console.log(e);
         res.statusCode = 400;

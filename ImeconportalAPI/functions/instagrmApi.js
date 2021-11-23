@@ -7,7 +7,7 @@ const GRAPH_API_URL = 'https://graph.facebook.com/v12.0/';
 //instagrap GraphAPI buisiness_discovery エンドポイント
 const BUISINESS_DISCOVERY_EP = '?fields=business_discovery.username';
 //GraphAPIアクセストークン
-const IG_TOKEN = '?token=' + config.token;
+const IG_TOKEN = '&access_token=' + config.token;
 //GraphAPI用Instagramビジネスアカウント用ID
 const IG_B_ACCOUNT = config.buisinessAccountId;
 
@@ -20,38 +20,47 @@ const axios = require('axios');
  class IgMedia {
      /**
       * コンストラクタ
-      * @param {String} id IDIG
-      * @param {String} media IDMEDIA
+      * @param {String} mediaType メディアタイプ
       * @param {String} url 投稿URL(Instagramへのリンク)
+      * @param {String} thumbnailUrl サムネイルURL（VIDEOのみ)
+      * @param {String} mediaUrl メディアURL
+      * @param {Date} timestamp 投稿日付
       */
-    constructor(id, media, url) {
-        this.id = id;
+    constructor(media, url) {
         this.media = media;
         this.url = url;
     }
 }
 
 /**
- * FBログイン承認済みのユーザのInstagram投稿を取得する
- * @param arrayId IGID配列
- * @returns IgMediaクラス
+ * FBログイン承認済みのユーザのInstagram投稿メディアIDを取得する
+ * @param {Array} arrayNames ビジネスユーザ名配列
+ * @returns {Array} メディアリスト
  * */
-module.exports.getIgList = async function (arrayNames) {
+module.exports.GetIgList = async function (arrayNames) {
     //メディア取得用文字列
-    const gettingMedia = '{media}';
-    let content = new Array();
+    const POST_COUNT = 4;
+    const gettingMedia = '{'
+        + 'media.limit(' + POST_COUNT
+        + '){'
+        + 'media_url,'
+        + 'permalink,'
+        + 'timestamp,'
+        + 'caption'
+         + '}}';
+    let mediaList = new Array();
     for await (let name of arrayNames){
         let url = GRAPH_API_URL + IG_B_ACCOUNT
                   + BUISINESS_DISCOVERY_EP
                   + '('+ name +')'+ gettingMedia
                   + IG_TOKEN;
                   console.log(url);
-        content.push(
+        mediaList.push(
             await axios.get(url)
             .then(response => {
                 console.log(response);
                 if (response.statusText == 'OK'){
-                    return response.data;
+                    return response.data.business_discovery.media.data
                 }
             })
             .catch(error => {
@@ -60,5 +69,6 @@ module.exports.getIgList = async function (arrayNames) {
             })
         );
     }
-    return content;
+    console.log(mediaList);
+    return mediaList;
 };
