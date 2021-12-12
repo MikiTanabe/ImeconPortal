@@ -2,6 +2,8 @@ const instagramApi = require("./functions/instagrmApi.js");
 const instaListRepository = require("./firestore/instaListRepository.js");
 const eventRepository = require("./firestore/eventRepository.js");
 const listUtil = require("./functions/listUtil.js");
+const youtuRepository = require("./firestore/youtubeRepository.js");
+const youtuApi = require("./functions/youtuApi.js");
 //ポート番号
 const PORT = 3000;
 
@@ -22,11 +24,11 @@ app.listen(PORT, () => { console.log("Node.js is listening to PORT: ${PORT}")});
  *  */
 app.get("/api/igmedia/list", async (req, res) => {
     try{
+        //リクエスト元URLの設定
+        SetCORS(res);
         const arrayName = await instaListRepository.getAllNameArray();
         const mediaList = await instagramApi.GetIgList(arrayName);
         let resultList = new Array();
-        //リクエスト元URLの設定
-        SetCORS(res);
         for(let medias of mediaList) {
             if (medias != null){
                 for(let media of medias) {
@@ -56,8 +58,8 @@ app.get("/api/igmedia/list", async (req, res) => {
  */
 app.get("/api/event/list", async (req, res) => {
     try{
-        const eventList = await eventRepository.GetEventsArray();
         SetCORS(res);
+        const eventList = await eventRepository.GetEventsArray();
         res.json(eventList);
     } catch (e) {
         console.log(e);
@@ -66,6 +68,23 @@ app.get("/api/event/list", async (req, res) => {
 })
 //TODO: ユーザーのInstagramIdを受け取って、ビジネスアカウントならIDをigListDocumentに入れる。
 //TODO: IgIdが変わってたらupdateする
+
+/**
+ * Youtube動画リストを取得する
+ * @param res レスポンスオブジェクト 
+ * @param req リクエストオブジェクト
+ */
+app.get("/api/movie/list", async (req, res) => {
+    try{
+        SetCORS(res);
+        const channelIdList = await youtuRepository.getAllIdArray();
+        const channelList = youtuApi.getYoutubeAll(channelIdList);
+        res.json(channelList);
+    } catch (e) {
+        console.log(e);
+        res.statusCode = 400;
+    }
+});
 
 /**
  * CORSを設定する

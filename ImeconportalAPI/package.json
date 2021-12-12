@@ -12,6 +12,8 @@
   "dependencies": {
     "axios": "^0.24.0",
     "express": "^4.17.1",
-    "firebase-admin": "^10.0.0"
+    "firebase-admin": "^10.0.0",
+    "google-auth-library": "^7.10.2",
+    "googleapis": "^92.0.0"
   }
 }

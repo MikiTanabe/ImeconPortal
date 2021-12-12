@@ -7,22 +7,29 @@
             <div class="row">
                 <div class="col-12 col-md-6 p-0" v-if="0<eventList.length">
                     <div class="row">
-                        <div class="col-12">
-                            <img :src="eventList[0].imgUrl" class="img-fluid">
+                        <div class="col-12 p-0">
+                            <div class="square-box">
+                                <img :src="eventList[0].imgUrl">
+                                <div class="col-12 d-lg-flex event-caption-panel d-none d-lg-block">
+                                    <p class="event-caption">{{ eventList[0].title }}</p>
+                                </div>
+                                <div class="col-12 d-flex event-caption-panel">
+                                    <p class="event-caption">{{ eventList[0].introduction }}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <p class="event-caption">{{ eventList[0].introduction }}</p>
-                    </div>
                 </div>
-                <div class="col-12 col-md-6" v-if="2<eventList.length">
+                <div class="col-12 col-md-6 p-0" v-if="1<eventList.length">
                     <div class="row">
-                        <div v-for="event in eventList.slice(1, 5)" :key="event.id" class="col-md-6 p-0" style="height: 17em;padding-right:2px;">
+                        <div v-for="event in eventList.slice(1, 5)" :key="event.id" class="col-md-6 p-0">
                             <div class="col-12 p-0">
-                                <img :src="event.imgUrl" class="img-fluid">
-                            </div>
-                            <div class="bg-white col-12 d-flex align-items-center justify-content-center">
-                                <p class="event-caption">{{ event.introduction }}</p>
+                                <div class="square-box">
+                                    <img :src="event.imgUrl">
+                                    <div class="event-caption-panel col-12 d-flex align-items-center">
+                                        <p class="event-caption p-0">{{ event.introduction }}</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -33,7 +40,7 @@
     </div>
     <div class="row">
         <div class="col-12 col-md-6">
-            <h2 class="title-gold with-circle">Instagram</h2>
+            <h2 class="title-gold with-circle pt-2">Instagram</h2>
             <div class="row">
                 <div class="col-12 col-md-3 p-0" v-for="igMedia in igList" :key="igMedia.media_url">
                     <a :href="igMedia.url" target="blank">
@@ -43,7 +50,7 @@
             </div>
         </div>
         <div class="col-12 col-md-6">
-            <h2 class="title-gold with-circle">Youtube</h2>
+            <h2 class="title-gold with-circle pt-2">Youtube</h2>
             <div class="row">
             </div>
         </div>
@@ -56,6 +63,7 @@
     //igList返却API
     const igUrl = 'https://imecon.portal.api/api/igmedia/list'
     const evUrl = 'https://imecon.portal.api/api/event/list'
+    const youtuUrl = 'https://imecon.portal.api/api/movie/list'
     export default {
         name: 'Top',
         components: {
@@ -64,7 +72,8 @@
         data () {
             return {
                 igList: new Array(),
-                eventList: new Array()
+                eventList: new Array(),
+                youtuList: new Array()
             }
         },
         methods: {
@@ -81,6 +90,13 @@
              */
             GetEventList: async function() {
                 return await this.CallFetchMethod(evUrl)
+            },
+            /**
+            * Youtube動画リストを取得する
+            * @returns {Object} Youtube動画リスト
+             */
+            GetYoutuList: async function() {
+                return await this.CallFetchMethod(youtuUrl)
             },
             /**
              * CORSでFetchメソッドを呼び出す
@@ -107,10 +123,14 @@
             var igList = this.GetIGList()
             //イベントを取得する
             var eventList = this.GetEventList()
+            //youtube動画を取得する
+            var youtuList = this.GetYoutuList()
             this.igList = await igList;
             this.eventList = await eventList;
+            this.youtuList = await youtuList;
             console.log(this.igList)
             console.log(this.eventList)
+            console.log(this.youtuList)
         }
     }
 </script>

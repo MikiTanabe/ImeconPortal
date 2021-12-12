@@ -6,11 +6,11 @@
                     <div class="col-4">
                         <div class="row">
                             <div class="col-12">
-                                <p class="small md-medium ml-1">イメージコンサルティングのイベント・サロン交流サイト</p>
+                                <p class="small md-medium ml-1 d-none d-lg-block">イメージコンサルティングのイベント・サロン交流サイト</p>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-12 d-flex justify-content-start align-items-end p-0 pl-2">
+                            <div class="col-12 d-flex justify-content-start p-0 pl-2">
                                 <div class="header-logo">
                                     <router-link to="/">
                                         <img src="@/img/bouquet_logo-long.png" class="img-fluid">
@@ -23,7 +23,7 @@
                         <div class="row">
                             <div class="col-12 p-0">
                                 <div class="d-flex justify-content-end align-items-center">
-                                    <!-- メニュー -->
+                                    <!-- PCメニュー -->
                                     <div class="col-3 p-0">
                                         <button class="menuBtn" :class="{menuBtnActive: isCurrentPath.top}" type="button" @click="showContent('/')">
                                             <div class="d-flex align-items-center justify-content-center">
