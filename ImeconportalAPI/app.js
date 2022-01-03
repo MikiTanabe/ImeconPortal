@@ -4,6 +4,8 @@ const eventRepository = require("./firestore/eventRepository.js");
 const listUtil = require("./functions/listUtil.js");
 const youtuRepository = require("./firestore/youtubeRepository.js");
 const youtuApi = require("./functions/youtuApi.js");
+const youtuUrl = "https://www.youtube.com/watch?v=";
+
 //ポート番号
 const PORT = 3000;
 
@@ -34,7 +36,7 @@ app.get("/api/igmedia/list", async (req, res) => {
                 for(let media of medias) {
                     let result = {
                         id: media.id,
-                        url: media.permlink,
+                        url: media.permalink,
                         thumbnail_url: media.media_url,
                         caption: media.caption,
                         timestamp: media.timestamp
@@ -43,7 +45,7 @@ app.get("/api/igmedia/list", async (req, res) => {
                 }
             }
         }
-        listUtil.SortByTimestamp(resultList);
+        listUtil.sortByTimestamp(resultList);
         res.json(resultList);
     } catch (e) {
         console.log(e);
@@ -78,8 +80,22 @@ app.get("/api/movie/list", async (req, res) => {
     try{
         SetCORS(res);
         const channelIdList = await youtuRepository.getAllIdArray();
-        const channelList = youtuApi.getYoutubeAll(channelIdList);
-        res.json(channelList);
+        const channelList = await youtuApi.getYoutubeAll(channelIdList);
+        let movieList = new Array();
+        for(let channel of channelList){
+            console.log(channel);
+            movieList.push({
+                id: channel.id.videoId,
+                url: youtuUrl + channel.id.videoId,
+                thumbnails: channel.snippet.thumbnails,
+                channelTitle: channel.snippet.channelTitle,
+                title: channel.snippet.title,
+                description: channel.snippet.description,
+                timestamp: channel.snippet.publishTime
+            });
+        }
+        listUtil.sortByTimestamp(movieList);
+        res.json(movieList);
     } catch (e) {
         console.log(e);
         res.statusCode = 400;

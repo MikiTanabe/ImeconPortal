@@ -7,7 +7,6 @@ const OAUTH2_SCOPES = [
     'https://www.googleapis.com/auth/youtube.readonly'
 ];
 
-const objectUtil = require('./objectUtil.js');
 const axios = require('axios');
 const { google } = require('googleapis');
 const OAuth2 = google.auth.OAuth2;
@@ -42,22 +41,15 @@ module.exports.getYoutuAuth = function (channelIdList) {
  * @returns {Object} Youtubeチャンネル情報リスト
  */
 module.exports.getYoutubeAll = async function (channelIdList) {
-    fs.readFile('./functions/api_key.json', async function readApi_Key (err, content) {
-        if (err) {
-            console.log('Error loading client secret file: ' +  err);
-            return;
-        }
-        const key = JSON.parse(content).key;
-        const url = 'https://www.googleapis.com/youtube/v3/channels?key=' + key + '&part=contentDetails&id='
-        let youtuList = new Array();
+    let youtuList = new Array();
+    try{
         for await(let id of channelIdList)
         {
-            console.log(url + id);
-            youtuList.push(await axios.get(url + id)
+            youtuList = youtuList.concat(await axios.get(await getUrl(id))
             .then(response => {
                 console.log(response);
                 if (response.statusText == 'OK'){
-                    return response;
+                    return response.data.items;
                 }
             })
             .catch(error => {
@@ -65,8 +57,26 @@ module.exports.getYoutubeAll = async function (channelIdList) {
                 return null;
             }));
         }
-        return youtuList;
-    });
+        console.log(youtuList);
+    } catch (e) {
+        console.log('Error loading client secret file: ' +  e);
+        return null;
+    }
+    return youtuList;
+}
+
+/**
+ * チェンネルIDから、投稿動画を取得するURLを生成する
+ * @param {String} id 
+ * @returns 投稿動画を取得するURL
+ */
+async function getUrl(id) {
+    const content = await fs.promises.readFile('./functions/api_key.json');
+
+    return 'https://www.googleapis.com/youtube/v3/search?key='
+    + JSON.parse(content).key
+    + '&part=snippet&channelId=' + id
+    + '&order=date&type=video'
 }
 
 /**

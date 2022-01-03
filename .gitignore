@@ -3,6 +3,7 @@ org-tanabe-ssl-certs
 ImeconportalAPI/node_modules
 ImeconPortalAPI/bouquet-e3ec0-firebase-adminsdk-lals6-59bd9cdf53.json
 ImeconPortalAPI/graphapi.config.json
+ImeconPortalAPI/youtuDataApi.config.json
 ImeconPortalAPI/functions/client_secret.json
 ImeconPortalAPI/functions/api_key.json
 bouquet/.DS_Store
