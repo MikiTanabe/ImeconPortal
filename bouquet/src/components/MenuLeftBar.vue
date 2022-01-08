@@ -15,7 +15,7 @@
                 <div class="col-12">
                     <ul>
                         <li><router-link to="eventtop" class="active">イベントの管理</router-link></li>
-                        <li>コンサルタントプロフィール</li>
+                        <li><router-link to="consultantedit" class="active">コンサルタントプロフィール</router-link></li>
                         <li>マイサロン</li>
                         <li>アカウント情報</li>
                         <li class="mt-1"><a href="javascript:void(0)" @click="signout" class="notice-link">サインアウト</a></li>

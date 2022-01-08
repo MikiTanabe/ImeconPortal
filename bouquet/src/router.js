@@ -8,6 +8,7 @@ import EventTop from '@/views/EventTop.vue'
 import EventPage from '@/views/EventPage.vue'
 import SalonPage from '@/views/SalonPage.vue'
 import ConsultantProfile from '@/views/ConsultantProfile.vue'
+import ConsultantEdit from '@/views/ConsultantEdit.vue'
 import EventEdit from '@/views/EventEdit.vue'
 import { auth } from '@/firebase/firestore'
 
@@ -76,9 +77,9 @@ let router = new Router({
                     props: true
                 },
                 {
-                    path: 'consultantprofile',
-                    name: 'ConsultantProfileCh',
-                    component: ConsultantProfile,
+                    path: 'consultantedit',
+                    name: 'ConsultantEdit',
+                    component: ConsultantEdit,
                     props: true
                 },
                 {
