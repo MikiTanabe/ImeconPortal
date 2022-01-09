@@ -3,7 +3,8 @@ import { fsRef } from '@/firebase/firestore'
 
 export const storageNumbers = {
     DEFAULT: 0,
-    EVENT: 1
+    EVENT: 1,
+    PROFILE: 2
 }
 
 export function checkFile(file, limit=5000000) {
@@ -49,6 +50,28 @@ export async function uploadEventImage(id, img) {
             noImage = url
         }).then(() => {
             const strageRef = fsRef.child('events/' + id)
+            strageRef.put(img).then(snapShot => {
+                snapShot.ref.getDownloadURL().then(url => {
+                    resolve(url)
+                }).catch(() => {
+                    resolve(noImage)
+                })
+            })
+        }).catch(() => {
+            reject()
+        })
+        
+    })
+}
+
+//プロフィールイメージアップロード
+export async function uploadProfileImage(id, img) {
+    return new Promise((resolve, reject) => {
+        var noImage
+        fsRef.child('/profile/profile-no-image.jpg').getDownloadURL().then(url => {
+            noImage = url
+        }).then(() => {
+            const strageRef = fsRef.child('profile/' + id)
             strageRef.put(img).then(snapShot => {
                 snapShot.ref.getDownloadURL().then(url => {
                     resolve(url)

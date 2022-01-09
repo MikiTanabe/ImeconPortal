@@ -5,6 +5,7 @@
         </div>
         <div class="row">
             <div class="col-12 col-md-8">
+                <upload-img-form ref="imgForm" :prNumStorage="numStorage" :id="consultantID" :preview="prevImgUrl" />
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="consultant-name-label">コンサルタント名</span>
@@ -62,7 +63,7 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="url-blog-label">ブログ・HP等</span>
                     </div>
-                    <input type="url" :bind="urlBlog" aria-label="UrlBlog"
+                    <input type="url" :bind="urlBlog" aria-label="UrlBlog" placeholder="https://"
                     area-describedby="url-blog-label" class="form-control">
                 </div>
                 <div class="d-flex flex-wrap justify-content-center mb-3">
@@ -83,13 +84,25 @@
 </template>
 <script>
     import json from '@/scripts/consultantsFormat.json'
+    import UploadImgForm from '@/components/UploadImgForm'
+    import { storageNumbers } from '@/scripts/picture'
+    import { copyObjectReactive } from '@/scripts/functions'
+    import { db } from '@/firebase/firestore'
+    import { getUser } from '@/scripts/user'
+
     const thisName = 'ConsultantEdit'
 
     export default {
         name: thisName,
         data() {
             return {
-
+                profileImg: null,
+                numStorage: storageNumbers.PROFILE,
+                prevImgUrl: '',
+                consultantData: {
+                    type: Object,
+                    default: () => (this.prObjConsultantData)
+                }
             }
         },
         props: {
@@ -101,129 +114,127 @@
                 } 
             }
         },
+        components: {
+            UploadImgForm
+        },
         computed: {
-            consultantData: function () {
-                console.log(json)
-                console.log(this.prObjConsultantData)
-                return this.prObjConsultantData
-            },
             birth: {
-                get() {
+                get: function () {
                     return this.consultantData.birth
                 },
-                set(newVal) {
+                set: function (newVal) {
                     this.$set(this.consultantData, 'birth', newVal)
                 }
             },
             blnHavProfile: {
-                get() {
+                get: function () {
                     return this.consultantData.blnHavProfile
                 },
-                set(newVal) {
+                set: function (newVal) {
                     this.$set(this.consultantData, 'blnHavProfile', newVal)
                 }
             },
             certification: {
-                get() {
+                get: function () {
                     return this.consultantData.certification
                 },
-                set(newVal) {
+                set: function (newVal) {
                     this.$set(this.consultantData, 'certification', newVal)
                 }
             },
             consulName: {
-                get() {
+                get: function () {
                     return this.consultantData.consulName
                 },
-                set(newVal) {
+                set: function (newVal) {
                     this.$set(this.consultantData, 'consulName', newVal)
                 }
             },
             consultantID: {
-                get() {
+                get: function () {
                     return this.consultantData.consultantID
                 },
-                set(newVal) {
+                set: function (newVal) {
                     this.$set(this.consultantData, 'consultantID', newVal)
                 }
             },
             igName: {
-                get() {
+                get: function () {
                     return this.consultantData.igName
                 },
-                set(newVal) {
+                set: function (newVal) {
                     this.$set(this.consultantData, 'igName', newVal)
                 }
             },
             introduction: {
-                get() {
+                get: function () {
                     return this.consultantData.introduction
                 },
-                set(newVal) {
+                set: function (newVal) {
                     this.$set(this.consultantData, 'introduction', newVal)
                 }
             },
             keyWords: {
-                get() {
+                get: function () {
                     return this.consultantData.keyWords
                 },
-                set(newVal) {
+                set: function (newVal) {
                     this.$set(this.consultantData, 'keyWords', newVal)
                 }
             },
             profileImgUrl: {
-                get() {
+                get: function () {
                     return this.consultantData.profileImgUrl
                 },
-                set(newVal) {
+                set: function (newVal) {
                     this.$set(this.consultantData, 'profileImgUrl', newVal)
                 }
             },
             salonName: {
-                get() {
+                get: function () {
                     return this.consultantData.salonName
                 },
-                set(newVal) {
+                set: function (newVal) {
                     this.$set(this.consultantData, 'salonName', newVal)
                 }
             },
             salonID: {
-                get() {
+                get: function () {
                     return this.consultantData.salonID
                 },
-                set(newVal) {
+                set: function (newVal) {
                     this.$set(this.consultantData, 'salonID', newVal)
                 }
             },
             showBirth: {
-                get() {
+                get: function () {
                     return this.consultantData.showBirth
                 },
-                set(newVal) {
+                set: function (newVal) {
                     this.$set(this.consultantData, 'showBirth', newVal)
                 }
             },
             uid: {
-                get() {
+                get: function () {
                     return this.consultantData.uid
                 },
-                set(newVal) {
+                set: function (newVal) {
                     this.$set(this.consultantData, 'uid', newVal)
                 }
             },
             urlBlog: {
-                get() {
+                get: function () {
                     return this.consultantData.urlBlog
                 },
-                set(newVal) {
+                set: function (newVal) {
                     this.$set(this.consultantData, 'urlBlog', newVal)
                 }
             },
             youtuCh: {
-                get() {
+                get: function () {
                     return this.consultantData.youtuCh
                 },
-                set(newVal) {
+                set: function (newVal) {
                     this.$set(this.consultantData, 'youtuCh', newVal)
                 }
             },
@@ -231,8 +242,43 @@
                 return this.blnHavProfile ? "更新" : "新規登録"
             }
         },
-        created() {
-            
+        mounted: async function () {
+            //TODO: オブジェクトがリアクティブになってない
+            await this.getConsultantData()
+        },
+        methods: {
+            getConsultantData: async function () {
+                const user = await getUser()
+                const docRef = db.collection('consultants')
+                                 .where('uid', '==', user.get('id'))
+                docRef.get().then(docSnapshot => {
+                    docSnapshot.forEach(doc => {
+                        if(doc.exists){
+                            copyObjectReactive(doc.data(), this.consultantData, this)
+                            console.log(this.consultantData)
+                            this.prevImgUrl = doc.get('profileImgUrl')
+                        }
+                        return
+                    })
+                    return
+                })
+            },
+            submit: async function () {
+                const docRef = db.collection('consultants')
+                docRef.doc(this.evId).get().then(doc => {
+                    if(doc.exists && this.consultantID!='sample'){
+                        this.updateEvent()
+                        .then(() => { alert('イベントデータを更新しました')})
+                    } else {
+                        this.addEvent()
+                        .then(() => { alert('イベントを新規登録しました') })
+                    }
+                }).catch(e => {
+                    console.log('データの更新に失敗しました', e)
+                    alert('イベントデータの' + (this.consultantID != 'sample' || this.consultantID !== 'undefined'? '更新': '追加') + 'に失敗しました')
+                })
+                this.$router.push('/mypage/mypagehome').catch({})
+            },
         }
     }
 </script>
