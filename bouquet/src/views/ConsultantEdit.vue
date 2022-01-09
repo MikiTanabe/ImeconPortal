@@ -14,22 +14,72 @@
                 </div>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" id="consultant-name-label">誕生年</span>
+                        <span class="input-group-text" id="birth-label">誕生年</span>
                     </div>
-                        <input type="month" :bind="birth" placeholder="誕生年" aria-label="Birth"
-                        area-describedby="birth-label" class="form-control">
-                    </div>
+                    <input type="month" :bind="birth" placeholder="誕生年" aria-label="Birth"
+                    area-describedby="birth-label" class="form-control">
                 </div>
                 <div class="input-group mb-3">
                     <div class="d-flex align-items-center">
-                        <input type="checkbox" :bind="showBirth" class="d-inline-block mx-3">
-                        <div>
-                            <span>誕生年をプロフィールに表示する</span>
-                        </div>
+                        <input type="checkbox" :bind="showBirth" class="d-inline-block mx-3" id="show-birth">
+                        <label for="show-birth">
+                            誕生年をプロフィールに表示する
+                        </label>
+                    </div>
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="certification-label">資格等</span>
+                    </div>
+                    <input type="text" :bind="certification" placeholder="日本化粧品検定1級、カラーコーディネーター1級など" aria-label="Certification"
+                    area-describedby="certification-label" class="form-control">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="introduction-label">自己紹介文</span>
+                    </div>
+                    <textarea type="text" :bind="introduction" placeholder="自己紹介文" aria-label="Introduction"
+                    area-describedby="introduction-label" class="form-control"></textarea>
+                </div>
+                <div class="d-flex flex-wrap justify-content-center">
+                    <div class="col-12 col-md-6">
+                        <button type="button" class="btn btn-danger btn-block">
+                            <fa-icon :icon="['fab', 'youtube']" class="icon mr-2" />
+                            Youtubeを連携する
+                        </button>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <button type="button" class="btn btn-dark btn-block">
+                            <fa-icon :icon="['fab', 'instagram']" class="icon mr-2" />
+                            Instagramを連携する
+                        </button>
+                    </div>
+                </div>
+                <div class="my-3">
+                    <p>「Youtube、Instagramを連携する」ボタンをクリック後、承認していただくとトップページに承認したアカウントの投稿が表示されるようになります。</p>
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="url-blog-label">ブログ・HP等</span>
+                    </div>
+                    <input type="url" :bind="urlBlog" aria-label="UrlBlog"
+                    area-describedby="url-blog-label" class="form-control">
+                </div>
+                <div class="d-flex flex-wrap justify-content-center mb-3">
+                    <div class="col-12 col-md-6">
+                        <button type="button" @click="Submit()" class="btn btn-block btn-primary">
+                            {{ submitText }}
+                        </button>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <button type="button" @click="Submit(true)" class="btn btn-block btn-danger">
+                            削除
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 </template>
 <script>
     import json from '@/scripts/consultantsFormat.json'
@@ -176,6 +226,9 @@
                 set(newVal) {
                     this.$set(this.consultantData, 'youtuCh', newVal)
                 }
+            },
+            submitText: function () {
+                return this.blnHavProfile ? "更新" : "新規登録"
             }
         },
         created() {
