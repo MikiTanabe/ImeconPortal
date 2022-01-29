@@ -83,12 +83,13 @@
     </div>
 </template>
 <script>
-    import json from '@/scripts/consultantsFormat.json'
+    //import json from '@/scripts/consultantsFormat.json'
     import UploadImgForm from '@/components/UploadImgForm'
     import { storageNumbers } from '@/scripts/picture'
     import { formatDate, copyObjectReactive } from '@/scripts/functions'
     import { db } from '@/firebase/firestore'
     import { getUser } from '@/scripts/user'
+    import { Consultant } from '@/models/consultantModel'
 
     const thisName = 'ConsultantEdit'
 
@@ -99,20 +100,15 @@
                 profileImg: null,
                 numStorage: storageNumbers.PROFILE,
                 prevImgUrl: '',
-                consultantData: {
-                    type: Object,
-                    default: () => (this.prObjConsultantData)
-                },
-                blnHavProfile: false
+                consultantData: this.prObjConsultantData,
+                blnHavProfile: false,
+                consultantID: ''
             }
         },
         props: {
             prObjConsultantData: {
-                type: Object,
-                default: () => (json),
-                validator(val){
-                    return val === 'undefined'? false: true
-                } 
+                type: Consultant,
+                default: new Consultant()
             }
         },
         components: {
@@ -152,14 +148,14 @@
                     this.$set(this.consultantData, 'consulName', newVal)
                 }
             },
-            consultantID: {
-                get: function () {
-                    return this.consultantData.consultantID
-                },
-                set: function (newVal) {
-                    this.$set(this.consultantData, 'consultantID', newVal)
-                }
-            },
+            //consultantID: {
+            //    get: function () {
+            //        return this.consultantData.consultantID
+            //    },
+            //    set: function (newVal) {
+            //        this.$set(this.consultantData, 'consultantID', newVal)
+            //    }
+            //},
             igName: {
                 get: function () {
                     return this.consultantData.igName
@@ -262,7 +258,7 @@
                             this.prevImgUrl = doc.get('profileImgUrl')
                             this.blnHavProfile = true;
                         }
-                        return
+                        return true
                     })
                     return
                 })
@@ -273,14 +269,15 @@
                     const doc = docRef.doc(this.consultantID)
                     const docGet = await doc.get()
                     console.log(docGet.exists)
-                    //TODO: 更新データの確認(Invalid Data エラーの解決)
+                    console.log(this.consultantData)
+                    //TODO: 更新データの確認(Invalid Data エラーの解決 classの方調査(called eith empty path))
                     if(docGet.exists && this.consultantID!='sample'){
                         console.log(this.consultantData)
-                        doc.set(this.consultantData, {marge: true})
-                        .then(() => { alert('コンサルタントプロフィールを更新しました')})
+                        await this.consultantData.update(doc)
+                        alert('コンサルタントプロフィールを更新しました')
                     } else {
                         console.log(this.consultantData)
-                        await docRef.add(this.consultantData)
+                        await this.consultantData.add(docRef)
                         this.profileImgUrl = await this.$refs.imgForm.uploadImg()
                         await docRef.doc(this.consultantID).set(
                             {profileImgUrl: this.profileImgUrl},
