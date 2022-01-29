@@ -1,4 +1,6 @@
+//指定した文字をdigitとして日付を返却する
 export function formatDate ( date, strDigit ) {
+    console.log('対象日付: ', date.getFullYear())
     var rtnDate = ''
     var tYear = date.getFullYear()
     var tMonth = date.getMonth() + 1
@@ -11,7 +13,11 @@ export function formatDate ( date, strDigit ) {
     return rtnDate
 }
 
-//YYYY-MM-DD用
+/**
+ * YYYY-MM-DD用 文字列をDateに変換する
+ * @param {String} strDate 日付文字列(YYYY-MM-DD書式)
+ * @returns {Date} 日付
+ **/
 export function bqDateParse ( strDate ) {
     let year = strDate.substr( 0, 4 )
     let month = strDate.substr( 5, 2 ) - 1

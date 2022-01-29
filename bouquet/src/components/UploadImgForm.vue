@@ -9,7 +9,7 @@
     </div>
 </template>
 <script>
-    import { checkFile, getBase64, uploadEventImage, storageNumbers } from '@/scripts/picture'
+    import { checkFile, getBase64, uploadEventImage, storageNumbers, uploadPrpfileImage } from '@/scripts/picture'
 
     const IMG_SIZE = 1000000
 
@@ -69,7 +69,6 @@
                 }
             },//TODO: 新規作成の際のIDの取得
             uploadImg: async function () {
-                console.log('画像アップロード発火')
                 switch(this.prNumStorage) {
                     case storageNumbers.EVENT: {
                         return new Promise((resolve, reject) => {
@@ -84,7 +83,16 @@
                                 })
                             }
                         })
-                        
+                    }
+                    case storageNumbers.PROFILE: {
+                        try {
+                            if (this.imgFile != null) {
+                                return await uploadPrpfileImage(this.id, this.imgFile)
+                            }
+                        } catch (e) {
+                            console.log(e);
+                            return null;
+                        }
                     }
                 }
             }

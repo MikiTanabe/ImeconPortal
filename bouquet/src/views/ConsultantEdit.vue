@@ -10,19 +10,19 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="consultant-name-label">コンサルタント名</span>
                     </div>
-                    <input type="text" :bind="consulName" placeholder="コンサルタント名" aria-label="ConsultantName"
+                    <input type="text" v-model="consulName" placeholder="コンサルタント名" aria-label="ConsultantName"
                     area-describedby="consultant-name-label" class="form-control">
                 </div>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="birth-label">誕生年</span>
                     </div>
-                    <input type="month" :bind="birth" placeholder="誕生年" aria-label="Birth"
+                    <input type="month" v-model="birth" placeholder="誕生年" aria-label="Birth"
                     area-describedby="birth-label" class="form-control">
                 </div>
                 <div class="input-group mb-3">
                     <div class="d-flex align-items-center">
-                        <input type="checkbox" :bind="showBirth" class="d-inline-block mx-3" id="show-birth">
+                        <input type="checkbox" v-model="showBirth" class="d-inline-block mx-3" id="show-birth">
                         <label for="show-birth">
                             誕生年をプロフィールに表示する
                         </label>
@@ -32,14 +32,14 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="certification-label">資格等</span>
                     </div>
-                    <input type="text" :bind="certification" placeholder="日本化粧品検定1級、カラーコーディネーター1級など" aria-label="Certification"
+                    <input type="text" v-model="certification" placeholder="日本化粧品検定1級、カラーコーディネーター1級など" aria-label="Certification"
                     area-describedby="certification-label" class="form-control">
                 </div>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="introduction-label">自己紹介文</span>
                     </div>
-                    <textarea type="text" :bind="introduction" placeholder="自己紹介文" aria-label="Introduction"
+                    <textarea type="text" v-model="introduction" placeholder="自己紹介文" aria-label="Introduction"
                     area-describedby="introduction-label" class="form-control"></textarea>
                 </div>
                 <div class="d-flex flex-wrap justify-content-center">
@@ -63,17 +63,17 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="url-blog-label">ブログ・HP等</span>
                     </div>
-                    <input type="url" :bind="urlBlog" aria-label="UrlBlog" placeholder="https://"
+                    <input type="url" v-model="urlBlog" aria-label="UrlBlog" placeholder="https://"
                     area-describedby="url-blog-label" class="form-control">
                 </div>
                 <div class="d-flex flex-wrap justify-content-center mb-3">
                     <div class="col-12 col-md-6">
-                        <button type="button" @click="Submit()" class="btn btn-block btn-primary">
+                        <button type="button" @click="save()" class="btn btn-block btn-primary">
                             {{ submitText }}
                         </button>
                     </div>
                     <div class="col-12 col-md-6">
-                        <button type="button" @click="Submit(true)" class="btn btn-block btn-danger">
+                        <button type="button" @click="del()" class="btn btn-block btn-danger">
                             削除
                         </button>
                     </div>
@@ -86,7 +86,7 @@
     import json from '@/scripts/consultantsFormat.json'
     import UploadImgForm from '@/components/UploadImgForm'
     import { storageNumbers } from '@/scripts/picture'
-    import { copyObjectReactive } from '@/scripts/functions'
+    import { formatDate, copyObjectReactive } from '@/scripts/functions'
     import { db } from '@/firebase/firestore'
     import { getUser } from '@/scripts/user'
 
@@ -102,7 +102,8 @@
                 consultantData: {
                     type: Object,
                     default: () => (this.prObjConsultantData)
-                }
+                },
+                blnHavProfile: false
             }
         },
         props: {
@@ -120,18 +121,19 @@
         computed: {
             birth: {
                 get: function () {
-                    return this.consultantData.birth
+                    if(this.consultantData.birth != this.defaultDate){
+                        //firebaseから帰ってくる日付データが独自Objectのためparse処理を分岐
+                        try{
+                            return formatDate(this.consultantData.birth.toDate(), '-').slice(0, 7)
+                        } catch {
+                            return formatDate(this.consultantData.birth, '-').slice(0, 7)
+                        }
+                    } else {
+                        return this.objEventData.date
+                    }
                 },
                 set: function (newVal) {
                     this.$set(this.consultantData, 'birth', newVal)
-                }
-            },
-            blnHavProfile: {
-                get: function () {
-                    return this.consultantData.blnHavProfile
-                },
-                set: function (newVal) {
-                    this.$set(this.consultantData, 'blnHavProfile', newVal)
                 }
             },
             certification: {
@@ -240,10 +242,12 @@
             },
             submitText: function () {
                 return this.blnHavProfile ? "更新" : "新規登録"
+            },
+            defaultDate: function () {
+                return formatDate(new Date(), '-')
             }
         },
         mounted: async function () {
-            //TODO: オブジェクトがリアクティブになってない
             await this.getConsultantData()
         },
         methods: {
@@ -255,30 +259,45 @@
                     docSnapshot.forEach(doc => {
                         if(doc.exists){
                             copyObjectReactive(doc.data(), this.consultantData, this)
-                            console.log(this.consultantData)
                             this.prevImgUrl = doc.get('profileImgUrl')
+                            this.blnHavProfile = true;
                         }
                         return
                     })
                     return
                 })
             },
-            submit: async function () {
-                const docRef = db.collection('consultants')
-                docRef.doc(this.evId).get().then(doc => {
-                    if(doc.exists && this.consultantID!='sample'){
-                        this.updateEvent()
-                        .then(() => { alert('イベントデータを更新しました')})
+            save: async function () {
+                try {
+                    const docRef = db.collection('consultants')
+                    const doc = docRef.doc(this.consultantID)
+                    const docGet = await doc.get()
+                    console.log(docGet.exists)
+                    //TODO: 更新データの確認(Invalid Data エラーの解決)
+                    if(docGet.exists && this.consultantID!='sample'){
+                        console.log(this.consultantData)
+                        doc.set(this.consultantData, {marge: true})
+                        .then(() => { alert('コンサルタントプロフィールを更新しました')})
                     } else {
-                        this.addEvent()
-                        .then(() => { alert('イベントを新規登録しました') })
+                        console.log(this.consultantData)
+                        await docRef.add(this.consultantData)
+                        this.profileImgUrl = await this.$refs.imgForm.uploadImg()
+                        await docRef.doc(this.consultantID).set(
+                            {profileImgUrl: this.profileImgUrl},
+                            {marge: true}
+                        ).then(() => {
+                            alert('コンサルタントプロフィールを新規登録しました')
+                        })
+                        this.$router.push('/mypage/mypagehome').catch({})
                     }
-                }).catch(e => {
+                } catch (e) {
                     console.log('データの更新に失敗しました', e)
-                    alert('イベントデータの' + (this.consultantID != 'sample' || this.consultantID !== 'undefined'? '更新': '追加') + 'に失敗しました')
-                })
-                this.$router.push('/mypage/mypagehome').catch({})
+                    alert('コンサルタントプロフィールの' + (this.consultantID != 'sample' || this.consultantID !== 'undefined'? '更新': '追加') + 'に失敗しました')
+                }
             },
+            del: async function () {
+                alert('削除')
+            }
         }
     }
 </script>
