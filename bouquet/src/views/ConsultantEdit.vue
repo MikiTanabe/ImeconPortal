@@ -86,7 +86,7 @@
     //import json from '@/scripts/consultantsFormat.json'
     import UploadImgForm from '@/components/UploadImgForm'
     import { storageNumbers } from '@/scripts/picture'
-    import { formatDate, copyObjectReactive } from '@/scripts/functions'
+    import { formatDate } from '@/scripts/functions'
     import { db } from '@/firebase/firestore'
     import { getUser } from '@/scripts/user'
     import { Consultant } from '@/models/consultantModel'
@@ -102,7 +102,7 @@
                 prevImgUrl: '',
                 consultantData: this.prObjConsultantData,
                 blnHavProfile: false,
-                consultantID: ''
+                consultantID: null
             }
         },
         props: {
@@ -120,6 +120,7 @@
                     if(this.consultantData.birth != this.defaultDate){
                         //firebaseから帰ってくる日付データが独自Objectのためparse処理を分岐
                         try{
+                            console.log(this.consultantData.birth.toDate())
                             return formatDate(this.consultantData.birth.toDate(), '-').slice(0, 7)
                         } catch {
                             return formatDate(this.consultantData.birth, '-').slice(0, 7)
@@ -129,7 +130,9 @@
                     }
                 },
                 set: function (newVal) {
-                    this.$set(this.consultantData, 'birth', newVal)
+                    //this.$set(this.consultantData, 'birth', newVal)
+                    this.consultantData.birth = newVal
+                    console.log(this.consultantData)
                 }
             },
             certification: {
@@ -148,14 +151,6 @@
                     this.$set(this.consultantData, 'consulName', newVal)
                 }
             },
-            //consultantID: {
-            //    get: function () {
-            //        return this.consultantData.consultantID
-            //    },
-            //    set: function (newVal) {
-            //        this.$set(this.consultantData, 'consultantID', newVal)
-            //    }
-            //},
             igName: {
                 get: function () {
                     return this.consultantData.igName
@@ -248,15 +243,22 @@
         },
         methods: {
             getConsultantData: async function () {
+                if (this.prObjConsultantData.blnHavProfile) {
+                    //プロパティでデータが渡されている場合はfirebaseからのデータ取得を中止する
+                    return
+                }
                 const user = await getUser()
                 const docRef = db.collection('consultants')
                                  .where('uid', '==', user.get('id'))
                 docRef.get().then(docSnapshot => {
                     docSnapshot.forEach(doc => {
                         if(doc.exists){
-                            copyObjectReactive(doc.data(), this.consultantData, this)
+                            //opyObjectReactive(doc.data(), this.consultantData, this)
+                            this.consultantData = new Consultant(doc)
                             this.prevImgUrl = doc.get('profileImgUrl')
                             this.blnHavProfile = true;
+                            this.consultantID = doc.id
+                            console.log(this.consultantData.documentData)
                         }
                         return true
                     })

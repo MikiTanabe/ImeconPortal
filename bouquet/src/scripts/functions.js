@@ -76,3 +76,21 @@ export function ObjectParseMap(obj){
     })
     return map
 }
+
+/**
+ * null-undefined判定
+ * @param {Object} obj 
+ * @returns true: null/undefined false:not null/undefined
+ */
+export function isNullOrUndefined(obj) {
+    return obj === undefined || obj === null
+}
+
+/**
+ * null-(undefined)-empty判定
+ * @param {String} str 
+ * @returns true: null/undefined/empty false:not null/undefined/empty
+ */
+export function isNullOrEmpty(str) {
+    return isNullOrUndefined(str) || str == ''
+}
