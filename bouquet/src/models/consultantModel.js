@@ -1,4 +1,5 @@
-import { isNullOrEmpty } from "../scripts/functions"
+import { isNullOrEmpty, formatDate } from "../scripts/functions"
+import { db } from "@/firebase/firestore"
 
 /**
  * コンサルタントモデルクラス
@@ -21,13 +22,13 @@ export class Consultant {
             this.keyWords = ""
             this.profileImgUrl = ""
             this.salonName = ""
-            //this.salonID = ""
             this.showBirth = false
             this.uid = ""
             this.urlBlog = ""
             this.youtuCh = ""
         } else {
-            this.birth = data.get('birth')
+            //firebaseTimestamp型をyyyyMM文字列に修正する
+            this.birth = formatDate(data.get('birth').toDate(), '-').slice(0, 7)
             this.blnHavProfile = true
             this.certification = data.get('certification')
             this.consulName = data.get('consulName')
@@ -37,11 +38,24 @@ export class Consultant {
             this.keyWords = data.get('keyWords')
             this.profileImgUrl = data.get('profileImgUrl')
             this.salonName = data.get('salonName')
-            //this.salonID = data.get('salonID')
             this.showBirth = data.get('showBirth')
             this.uid = data.get('uid')
             this.urlBlog = data.get('urlBlog')
             this.youtuCh = data.get('youtuCh')
+        }
+        this.documentData = {
+            birth: db.Timestamp.fromDate(new Date(this.birth)),
+            certification: this.certification,
+            consulName : this.consulName,
+            igName: this.igName,
+            introduction: this.introduction,
+            keyWords: this.keyWords,
+            profileImgUrl: this.profileImgUrl,
+            salonName: this.salonName,
+            showBirth: this.showBirth,
+            uid: this.uid,
+            urlBlog: this.urlBlog,
+            youtuCh: this.youtuCh
         }
     }
 
@@ -56,9 +70,8 @@ export class Consultant {
             await docRef.add(this.documentData)
         } catch(e) {
             console.log(e)
-            return false
+            throw e
         }
-        return true
     }
 
     /**
@@ -73,28 +86,7 @@ export class Consultant {
             await doc.set(this.documentData, {merge: true})
         } catch(e) {
             console.log(e)
-            return false
+            throw e
         }
-        return true
-    }
-
-    /**
-     * firebase consultant data
-     */
-    //TODO: undefined プロパティの書き方調査
-    documentData = {
-        birth: this.birth,
-        certification: this.certification,
-        consulName : this.consulName,
-        igName: this.igName,
-        introduction: this.introduction,
-        keyWords: this.keyWords,
-        profileImgUrl: this.profileImgUrl,
-        salonName: this.salonName,
-        salonID: this.salonID,
-        showBirth: this.showBirth,
-        uid: this.uid,
-        urlBlog: this.urlBlog,
-        youtuCh: this.youtuCh
     }
 }

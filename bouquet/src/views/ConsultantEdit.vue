@@ -117,17 +117,19 @@
         computed: {
             birth: {
                 get: function () {
-                    if(this.consultantData.birth != this.defaultDate){
-                        //firebaseから帰ってくる日付データが独自Objectのためparse処理を分岐
-                        try{
-                            console.log(this.consultantData.birth.toDate())
-                            return formatDate(this.consultantData.birth.toDate(), '-').slice(0, 7)
-                        } catch {
-                            return formatDate(this.consultantData.birth, '-').slice(0, 7)
-                        }
-                    } else {
-                        return this.objEventData.date
-                    }
+                    //if(this.consultantData.birth != this.defaultDate){
+                    //    //firebaseから帰ってくる日付データが独自Objectのためparse処理を分岐
+                    //    //try{
+                    //    //    console.log(this.consultantData.birth.toDate())
+                    //    //    return formatDate(this.consultantData.birth.toDate(), '-').slice(0, 7)
+                    //    //} catch {
+                    //    //    return formatDate(this.consultantData.birth, '-').slice(0, 7)
+                    //    //}
+                    //} else {
+                    //    return this.objEventData.date
+                    //}
+                    //type=yearMonthのinputのvalue(yyyyMMの文字列)に合わせる
+                    return formatDate(this.consultantData.birth, '-').slice(0, 7)
                 },
                 set: function (newVal) {
                     //this.$set(this.consultantData, 'birth', newVal)
@@ -258,7 +260,7 @@
                             this.prevImgUrl = doc.get('profileImgUrl')
                             this.blnHavProfile = true;
                             this.consultantID = doc.id
-                            console.log(this.consultantData.documentData)
+                            console.log('初期表示更新対象データ', this.consultantData.documentData)
                         }
                         return true
                     })
@@ -272,7 +274,7 @@
                     const docGet = await doc.get()
                     console.log(docGet.exists)
                     console.log(this.consultantData)
-                    //TODO: 更新データの確認(Invalid Data エラーの解決 classの方調査(called eith empty path))
+                    //TODO: 更新データの確認(Invalid Data エラーの解決 / ソースコード変更が反映されていない docker再起動？)
                     if(docGet.exists && this.consultantID!='sample'){
                         console.log(this.consultantData)
                         await this.consultantData.update(doc)
