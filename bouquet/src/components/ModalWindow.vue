@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="modal fade" :id="target" tabindex="-1" >
+        <div class="modal fade" :id="target" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header" v-if="windowTitle!=''">
@@ -23,6 +23,7 @@
 </template>
 <script>
     export default {
+        //TODO: bootstrap modal $なしで、リアクティブにできないか調査
         name: 'ModalWindow',
         data() {
             return {

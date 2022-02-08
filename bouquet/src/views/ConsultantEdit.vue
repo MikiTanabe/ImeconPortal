@@ -68,14 +68,13 @@
                 </div>
                 <div class="d-flex flex-wrap justify-content-center mb-3">
                     <div class="col-12 col-md-6">
-                        <button type="button" @click="save()" class="btn btn-block btn-primary">
-                            {{ submitText }}
-                        </button>
+                        <pink-button @click="save()">{{ submitText }}</pink-button>
                     </div>
                     <div class="col-12 col-md-6">
                         <button type="button" @click="del()" class="btn btn-block btn-danger">
                             削除
                         </button>
+                        <notice-delete-window @click="del()" :prMessage="delMessage"/>
                     </div>
                 </div>
             </div>
@@ -90,6 +89,8 @@
     import { db } from '@/firebase/firestore'
     import { getUser } from '@/scripts/user'
     import { Consultant } from '@/models/consultantModel'
+    import PinkButton from '@/components/PinkButton'
+    import NoticeDeleteWindow from '@/components/NoticeDeleteWindow'
 
     const thisName = 'ConsultantEdit'
 
@@ -102,39 +103,28 @@
                 prevImgUrl: '',
                 consultantData: this.prObjConsultantData,
                 blnHavProfile: false,
-                consultantID: null
+                consultantID: null,
+                delMessage: 'プロフィールを削除します。よろしいですか？'
             }
         },
         props: {
             prObjConsultantData: {
                 type: Consultant,
-                default: new Consultant()
+                default: () => new Consultant()
             }
         },
         components: {
-            UploadImgForm
+            UploadImgForm,
+            PinkButton,
+            NoticeDeleteWindow
         },
         computed: {
             birth: {
                 get: function () {
-                    //if(this.consultantData.birth != this.defaultDate){
-                    //    //firebaseから帰ってくる日付データが独自Objectのためparse処理を分岐
-                    //    //try{
-                    //    //    console.log(this.consultantData.birth.toDate())
-                    //    //    return formatDate(this.consultantData.birth.toDate(), '-').slice(0, 7)
-                    //    //} catch {
-                    //    //    return formatDate(this.consultantData.birth, '-').slice(0, 7)
-                    //    //}
-                    //} else {
-                    //    return this.objEventData.date
-                    //}
-                    //type=yearMonthのinputのvalue(yyyyMMの文字列)に合わせる
-                    return formatDate(this.consultantData.birth, '-').slice(0, 7)
+                    return this.consultantData.birth
                 },
                 set: function (newVal) {
-                    //this.$set(this.consultantData, 'birth', newVal)
-                    this.consultantData.birth = newVal
-                    console.log(this.consultantData)
+                    this.$set(this.consultantData, 'birth', newVal)
                 }
             },
             certification: {
@@ -255,12 +245,10 @@
                 docRef.get().then(docSnapshot => {
                     docSnapshot.forEach(doc => {
                         if(doc.exists){
-                            //opyObjectReactive(doc.data(), this.consultantData, this)
                             this.consultantData = new Consultant(doc)
                             this.prevImgUrl = doc.get('profileImgUrl')
                             this.blnHavProfile = true;
                             this.consultantID = doc.id
-                            console.log('初期表示更新対象データ', this.consultantData.documentData)
                         }
                         return true
                     })
@@ -272,11 +260,8 @@
                     const docRef = db.collection('consultants')
                     const doc = docRef.doc(this.consultantID)
                     const docGet = await doc.get()
-                    console.log(docGet.exists)
-                    console.log(this.consultantData)
-                    //TODO: 更新データの確認(Invalid Data エラーの解決 / ソースコード変更が反映されていない docker再起動？)
+                    this.consultantData.setDocData(this.consultantData)
                     if(docGet.exists && this.consultantID!='sample'){
-                        console.log(this.consultantData)
                         await this.consultantData.update(doc)
                         alert('コンサルタントプロフィールを更新しました')
                     } else {
@@ -292,7 +277,7 @@
                         this.$router.push('/mypage/mypagehome').catch({})
                     }
                 } catch (e) {
-                    console.log('データの更新に失敗しました', e)
+                    console.log(e)
                     alert('コンサルタントプロフィールの' + (this.consultantID != 'sample' || this.consultantID !== 'undefined'? '更新': '追加') + 'に失敗しました')
                 }
             },

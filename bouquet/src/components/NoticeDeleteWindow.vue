@@ -1,9 +1,9 @@
 <template>
     <div>
-        <delete-button :modal="true" :target="targetName" :disable="!deleteAble">イベントを削除</delete-button>
-        <modal-window :target="targetName" :btn2="true" :btn2Txt="'イベントを削除'" @click="click">
+        <delete-button :modal="true" :target="targetName" :disable="!deleteAble">btnText</delete-button>
+        <modal-window :target="targetName" :btn2="true" :btn2Txt="btnText" @click="click">
             <div>
-                イベント【{{ evTitle }}】を削除します。
+                {{ message }}
             </div>
         </modal-window> 
     </div>
@@ -24,18 +24,25 @@
             }
         },
         props: {
-            prEvTitle: {
+            prMessage: {
                 type: String,
                 default: ''
             },
             deleteAble: {
                 type: Boolean,
                 default: true
+            },
+            prBtnText: {
+                type: String,
+                default: ''
             }
         },
         computed: {
-            evTitle: function () {
-                return this.prEvTitle
+            message: function () {
+                return this.prMessage
+            },
+            btnText: function () {
+                return this.prBtnText
             }
         },
         methods: {

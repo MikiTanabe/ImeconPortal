@@ -1,5 +1,4 @@
 import { isNullOrEmpty, formatDate } from "../scripts/functions"
-import { db } from "@/firebase/firestore"
 
 /**
  * コンサルタントモデルクラス
@@ -44,7 +43,7 @@ export class Consultant {
             this.youtuCh = data.get('youtuCh')
         }
         this.documentData = {
-            birth: db.Timestamp.fromDate(new Date(this.birth)),
+            birth: new Date(this.birth),
             certification: this.certification,
             consulName : this.consulName,
             igName: this.igName,
@@ -82,11 +81,31 @@ export class Consultant {
      */
     update = async function (doc) {
         try {
-            console.log('更新対象データ: ', this.documentData)
             await doc.set(this.documentData, {merge: true})
         } catch(e) {
             console.log(e)
             throw e
+        }
+    }
+
+    /**
+     * firebase登録用データをセットする
+     * @param {Consultant} data
+     */
+    setDocData = function(data) {
+        this.documentData = {
+            birth: new Date(data.birth),
+            certification: data.certification,
+            consulName : data.consulName,
+            igName: data.igName,
+            introduction: data.introduction,
+            keyWords: data.keyWords,
+            profileImgUrl: data.profileImgUrl,
+            salonName: data.salonName,
+            showBirth: data.showBirth,
+            uid: data.uid,
+            urlBlog: data.urlBlog,
+            youtuCh: data.youtuCh
         }
     }
 }

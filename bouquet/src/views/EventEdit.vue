@@ -80,7 +80,7 @@
                 <div class="row">
                     <div class="col-10 d-flex">
                         <pink-button @click="saveClick">{{ saveStr }}</pink-button>
-                        <notice-delete-window @click="deleteClick" :deleteAble="deleteAble" :prEvTitle="title"/>
+                        <notice-delete-window @click="deleteClick" :deleteAble="deleteAble" :prMessage="delMessage"/>
                     </div>
                 </div>
             </div>
@@ -260,6 +260,9 @@ import { getConsultantData } from '@/scripts/consultant'
             },
             defaultDate: function () {
                 return formatDate(new Date(), '-')
+            },
+            delMessage: function () {
+                return 'イベント【' + this.title + '】を削除します。'
             }
         },
         props: {

@@ -1,6 +1,5 @@
 //指定した文字をdigitとして日付を返却する
 export function formatDate ( date, strDigit ) {
-    console.log('対象日付: ', date.getFullYear())
     var rtnDate = ''
     var tYear = date.getFullYear()
     var tMonth = date.getMonth() + 1
