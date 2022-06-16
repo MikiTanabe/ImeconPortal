@@ -6,6 +6,8 @@ volumes:
  vue-cli-node-volume:
  #ImeconPortalAPI node_module用volume
  imp-backend-node-volume:
+ # typesense用volume
+ typesense-volume:
 
 services:
 #コンテナ詳細
@@ -61,3 +63,17 @@ services:
   stdin_open: true
   tty: true
   command: /bin/sh
+# typesense:
+#   image: typesense
+#   ports:
+#   - '8081:8081'
+#   build:
+#     context: ./typesense
+#   container_name: typesense
+#   privileged: true
+#   volumes:
+#   - typesense-volume
+#   - ./typesense/:/
+#   stdn_open: true
+#   tty: true
+#   command: /bin/sh

@@ -60,14 +60,21 @@ app.get("/api/igmedia/list", async (req, res) => {
  */
 app.get("/api/event/list", async (req, res) => {
     try{
-        SetCORS(res);
-        const eventList = await eventRepository.GetEventsArray();
+        SetCORS(res)
+        var eventList = {}
+        if (req.query.uid == '' || req.query.uid == undefined) {
+            eventList = await eventRepository.GetEventsArray()
+        } else {
+            eventList = await eventRepository.GetEventsArrayByUserId(req.query.uid)
+        }
         res.json(eventList);
     } catch (e) {
         console.log(e);
         res.statusCode = 400;
     }
 })
+
+
 //TODO: ユーザーのInstagramIdを受け取って、ビジネスアカウントならIDをigListDocumentに入れる。
 //TODO: IgIdが変わってたらupdateする
 

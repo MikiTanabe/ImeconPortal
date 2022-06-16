@@ -12,7 +12,7 @@
                     <p class="name mb-n1 mr-2">{{ consultantData.consulName }}</p>
                     <a :href="consultantData.igName" target="blank" v-if="consultantData.igName!=''" class="mr-1"><fa-icon :icon="['fab', 'instagram']" size="2x" color="black" /></a>
                     <a :href="consultantData.youtuCh" target="blank" v-if="consultantData.youtuCh!=''"><fa-icon :icon="['fab', 'youtube']" size="2x" color="black"/></a>
-                    <a :href="consultantData.urlBlog" target="blank" v-if="consultantData.urlBlog!=''"><fa-icon :icon="['fab', 'home']" /></a>
+                    <a :href="consultantData.urlBlog" target="blank" v-if="consultantData.urlBlog!=''"><fa-icon :icon="['fas', 'home']" size="2x" /></a>
                 </div>
                 <p v-if="consultantData.showBirth" class="mt-2 small">{{ birthYear }}年生まれ</p>
                 <p style="white-space: pre-wrap"> {{ consultantData.introduction }}</p>
@@ -23,26 +23,45 @@
     </div>
 </template>
 <script>
-    import json from '@/scripts/consultantsFormat.json'
+    // import json from '@/scripts/consultantsFormat.json'
+    import { getConsultantData } from '@/scripts/consultant'
+    import { Consultant } from '@/models/consultantModel'
     const thisName = 'ConsultantProfile'
     
     export default {
         name: thisName,
+        data() {
+            return {
+                consultantData: this.prObjConsultantData
+            }
+        },
         props: {
             prObjConsultantData: {
-                type: Object,
-                defdault: json,
-                validator(val){
-                    return val === 'undefined'? false: true
-                } 
+                type: Consultant,
+                default: new Consultant()
+            },
+            prUid: {
+                type: String,
+                default: ''
             }
         },
         computed: {
-            consultantData: function () {
-                return this.prObjConsultantData
-            },
             birthYear: function () {
-                return this.consultantData.birth.toDate().getFullYear()
+                return new Date(this.consultantData.birth).getFullYear()
+            },
+            uid: function () {
+                return this.prUid
+            }
+        },
+        created: async function () {
+            console.log('デフォルトデータ:', this.consultantData)
+            // データが渡されていない場合、fbからデータを取得する
+            if (this.consultantData.consultantID == 'sample') {
+                if (this.uid == '') {
+                    alert('コンサルタントデータを取得できませんでした')
+                    return
+                }
+                this.consultantData = await getConsultantData(this.uid)
             }
         }
     }

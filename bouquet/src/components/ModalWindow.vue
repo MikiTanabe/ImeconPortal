@@ -23,7 +23,6 @@
 </template>
 <script>
     export default {
-        //TODO: bootstrap modal $なしで、リアクティブにできないか調査
         name: 'ModalWindow',
         data() {
             return {

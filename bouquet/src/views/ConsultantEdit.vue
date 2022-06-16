@@ -5,7 +5,7 @@
         </div>
         <div class="row">
             <div class="col-12 col-md-8">
-                <upload-img-form ref="imgForm" :prNumStorage="numStorage" :id="consultantID" :preview="prevImgUrl" />
+                <upload-img-form ref="imgForm" :prNumStorage="numStorage" :id="consultantID" :preview="prevImgUrl" :changePrvImg="true" @changePrvImg="changeImgFileCallback"/>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="consultant-name-label">コンサルタント名</span>
@@ -42,23 +42,46 @@
                     <textarea type="text" v-model="introduction" placeholder="自己紹介文" aria-label="Introduction"
                     area-describedby="introduction-label" class="form-control"></textarea>
                 </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="id-instagram">Instagram アカウント名</span>
+                    </div>
+                    <input type="url" v-model="igName" aria-label="IgName" placeholder="Instagram アカウント名"
+                    area-describedby="url-blog-label" class="form-control">
+                </div>
+                <div class="my-3">
+                    <p>Instagramアカウント名を登録するとトップページ・プロフィールページに投稿が表示されます。（ビジネスアカウントのみ）</p>
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="id-instagram">Youtube チャンネルID</span>
+                    </div>
+                    <input type="url" v-model="youtuCh" aria-label="YoutuCh" placeholder="Youtube チャンネルID"
+                    area-describedby="url-blog-label" class="form-control">
+                </div>
+                <div class="my-3">
+                    <p>YoutubeチャンネルIDを登録するとトップページ・プロフィールページに投稿が表示されます。</p>
+                </div>
+                <!-- TODO: チャンネル名/アカウント名の登録 -->
+                <!-- 未実装機能 STA -->
                 <div class="d-flex flex-wrap justify-content-center">
-                    <div class="col-12 col-md-6">
+                    <div class="col-12 col-md-6 d-none">
                         <button type="button" class="btn btn-danger btn-block">
-                            <fa-icon :icon="['fab', 'youtube']" class="icon mr-2" />
+                            <fa-icon :icon="['fab', 'youtube']" class="icon mr-2" disabled/>
                             Youtubeを連携する
                         </button>
                     </div>
-                    <div class="col-12 col-md-6">
+                    <div class="col-12 col-md-6 d-none">
                         <button type="button" class="btn btn-dark btn-block">
-                            <fa-icon :icon="['fab', 'instagram']" class="icon mr-2" />
+                            <fa-icon :icon="['fab', 'instagram']" class="icon mr-2" disabled/>
                             Instagramを連携する
                         </button>
                     </div>
                 </div>
-                <div class="my-3">
+                <div class="my-3 d-none">
                     <p>「Youtube、Instagramを連携する」ボタンをクリック後、承認していただくとトップページに承認したアカウントの投稿が表示されるようになります。</p>
                 </div>
+                <!-- 未実装機能 END -->
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="url-blog-label">ブログ・HP等</span>
@@ -66,16 +89,9 @@
                     <input type="url" v-model="urlBlog" aria-label="UrlBlog" placeholder="https://"
                     area-describedby="url-blog-label" class="form-control">
                 </div>
-                <div class="d-flex flex-wrap justify-content-center mb-3">
-                    <div class="col-12 col-md-6">
-                        <pink-button @click="save()">{{ submitText }}</pink-button>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <button type="button" @click="del()" class="btn btn-block btn-danger">
-                            削除
-                        </button>
-                        <notice-delete-window @click="del()" :prMessage="delMessage"/>
-                    </div>
+                <div class="d-flex flex-wrap justify-content-start mb-3">
+                    <pink-button @click="save()">{{ submitText }}</pink-button>
+                    <notice-delete-window @click="del()" :prMessage="delMessage" :prBtnText="'削除'"/>
                 </div>
             </div>
         </div>
@@ -105,6 +121,7 @@
                 blnHavProfile: false,
                 consultantID: null,
                 delMessage: 'プロフィールを削除します。よろしいですか？'
+
             }
         },
         props: {
@@ -262,7 +279,13 @@
                     const docGet = await doc.get()
                     this.consultantData.setDocData(this.consultantData)
                     if(docGet.exists && this.consultantID!='sample'){
+                        // イベントの更新
+                        if (docGet.get('profileImgUrl') != this.prevImgUrl) {
+                            this.profileImgUrl = await this.$refs.imgForm.uploadImg()
+                        }
+                        this.consultantData.setDocData(this.consultantData)
                         await this.consultantData.update(doc)
+                        // TODO: コンサルタントプロフィール画像アップロード
                         alert('コンサルタントプロフィールを更新しました')
                     } else {
                         console.log(this.consultantData)
@@ -282,7 +305,15 @@
                 }
             },
             del: async function () {
+                // TODO: 削除処理
                 alert('削除')
+            },
+            /**
+             * ファイルアップロードコンポーネント用画像選択時のコールバック関数
+             * @param {String} val 選択画像URL
+             */
+            changeImgFileCallback: function (val) {
+                this.prevImgUrl = val
             }
         }
     }

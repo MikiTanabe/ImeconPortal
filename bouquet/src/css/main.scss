@@ -5,6 +5,8 @@
 $annin-white: #f5f3f2;
 $vietnam-beige: #e7be99;
 $desert-gold: #d1ae15;
+$desert-gold-light: #cec59d;
+$desert-gold-dark: #9c9679;
 
 /* ボタンデフォルトスタイルの削除 */
 button {
@@ -159,9 +161,29 @@ button:disabled {
     color: white;
 }
 
+/* ゴールドボタン */
+.btn-gold {
+    background: $desert-gold;
+    color: white;
+    border: solid 1px $desert-gold;
+    padding: 0.7em;
+    border-radius: 0.3em;
+}
+
+.btn-gold:hover {
+    background: $desert-gold-light;
+    color: white;
+    border: solid 1px $desert-gold-light;
+}
+
+.btn-gold:disabled {
+    background: $desert-gold-dark;
+    border: solid 1px $desert-gold-dark;
+}
+
 /* 見出し要素 */
 #title h1 {
-    color: #882954;
+    color: #000000;
     font-family: 'Arvo', 'M PLUS 1p', sans-serif;
     font-weight: bold;
     font-size: 1.4em;
@@ -172,6 +194,13 @@ button:disabled {
     font-size: 1.3em;
     font-weight: bold;
     border-bottom:1px solid $desert-gold;
+}
+
+#title h3 {
+    font-family: 'Arvo', 'M PLUS 1p', sans-serif;
+    font-size: 1.1em;
+    font-weight: bold;
+    /* border-bottom:1px solid $desert-gold; */
 }
 
 #title .title-gold {
@@ -185,28 +214,19 @@ button:disabled {
     vertical-align: middle;
 }
 
-#title h3 {
-    color: #882954;
-    font-family: 'M PLUS 1p', sans-serif;
-    font-size: 1.2em;
-    font-weight: bold;
-}
-
 #title h4 {
-    color: #882954;
+    color: $desert-gold;
     font-family: 'M PLUS 1p', sans-serif;
     font-size: 1.1em;
     font-weight: bold;
 }
 
 #title h6 {
-    color: #882954;
+    color: $desert-gold;
     font-family: 'M PLUS 1p', sans-serif;
     font-size: 1em;
     font-weight: bold;
 }
-
-
 
 /* 色指定 */
 .cl-darkpink {
@@ -215,12 +235,12 @@ button:disabled {
 
 /* リンク装飾 */
 .notice-link {
-    color: #c73576!important;
+    color: #0049a9!important;
     text-decoration: underline;
 }
 
 .notice-link:hover {
-    color: #eca0c2!important;
+    color: #4d7fda!important;
     text-decoration: none;
 }
 
@@ -261,6 +281,7 @@ button:disabled {
 
 .square-box {
     width: 100%;
+    height: 100%;
     position: relative;
     overflow: hidden;
 }
@@ -283,6 +304,10 @@ button:disabled {
     .square-box::before {
         padding-top: 100%;
     }
+
+    .d-lg-cell {
+        display: table-cell;
+    }
 }
 
 .square-box img {
@@ -292,4 +317,8 @@ button:disabled {
     top: 0;
     left: 0;
     object-fit: cover;
+}
+
+.hover-pointer-pointer {
+    cursor: pointer;
 }

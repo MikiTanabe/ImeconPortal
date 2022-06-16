@@ -1,16 +1,16 @@
 <template>
     <div>
-        <h3>{{ objEventData.title }}</h3>
+        <h3>{{ eventData.data.title }}</h3>
         <div class="row">
             <div class="col-12 mt-3 d-flex flex-column align-items-center">
                 <div class="col-10 col-md-6 d-flex">
-                    <img :src="objEventData.imgUrl" class="img-fluid">
+                    <img :src="eventData.data.imgUrl" class="img-fluid">
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="text-left col-12 mt-3 event-detail">
-                <p>{{ objEventData.introduction }}</p>
+                <p>{{ eventData.data.introduction }}</p>
             </div>
         </div>
         <div class="row">
@@ -24,26 +24,29 @@
             <div class="col-12 mt-1 data-box">
                 <table class="table-sm table-clear">
                     <tbody>
-                        <tr><td>開催日: </td><td>{{ objEventData.date }}</td></tr>
-                        <tr v-if="objEventData.txtUrl!='イベントURL'&&objEventData.txtUrl!=='undefined'&&objEventData.txtUrl!=''"><td>イベントURL: </td><td>{{ objEventData.txtUrl }}</td></tr>
-                        <tr><td>主催者: </td><td><a href="javascript:void(0)" @click="hostClick(objEventData.uid)" class="notice-link">{{ objEventData.consultantName }}</a><span v-if="objEventData.salonName!='サロン名'"> / <a href="javascript:void(0)" @click="hostSalonClick" class="notice-link">{{ objEventData.salonName }}</a></span></td></tr>
+                        <tr><td>開催日: </td><td>{{ formatDate(new Date(eventData.date), '/') }}</td></tr>
+                        <tr v-if="eventData.data.txtUrl!='イベントURL'&&eventData.data.txtUrl!=='undefined'&&eventData.data.txtUrl!=''"><td>イベントURL: </td><td>{{ eventData.data.txtUrl }}</td></tr>
+                        <tr><td>主催者: </td><td><a href="javascript:void(0)" @click="hostClick(eventData.data.uid)" class="notice-link">{{ eventData.data.consultantName }}</a><span v-if="eventData.data.salonId!=''"> / <a href="javascript:void(0)" @click="hostSalonClick" class="notice-link">{{ eventData.data.salonName }}</a></span></td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
+        <!-- 未実装機能
         <div class="row">
             <div class="col-12 mt-3">
                 <h4 class="mb-3">参加者</h4>
                 <guest-list :prGuestList="guestsList" />
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 <script>
     import { db } from '@/firebase/firestore'
     import { formatDate } from '@/scripts/functions'
-    import GuestList from '@/components/GuestList.vue'
+    // import GuestList from '@/components/GuestList.vue'
     import { pushSalonPage, pushConsultantProfile } from '@/scripts/routerPush'
+    import { Event } from '@/models/eventModel'
+    import { Consultant } from '@/models/consultantModel'
 
     const componentName = 'EventPage'
 
@@ -55,76 +58,94 @@
         data: {}
     }
     */
+   // TODO: セッションに保存
 
     export default {
         name: componentName,
         components: {
-            GuestList
+            // GuestList
         },
         data() {
             return {
-                objEventData: () => {[]}
+                
             }
         },
         props: {
-            prEvid: {
-                type: String,
-                default: ''
+            // prEvid: {
+            //     type: String,
+            //     default: ''
+            // },
+            prEventData: {
+                default: new Event()
             }
         },
         computed: {
-            evid: function () {
-                return this.prEvid
-            },
-            guestsList: function () {
-                return this.objEventData.join
+            eventData: function () {
+                return this.prEventData
             }
+            //guestsList: function () {
+            //    return this.eventData.join
+            //}
         },
         methods: {
-            getEventData: async function () {
-                return new Promise((resolve, reject) => {
-                    if(this.evid==''){
-                        reject()
-                    }
-                    const docRef = db.collection('events').doc(this.evid)
-                    docRef.get().then(doc => {
-                        if(doc.exists){
-                            this.objEventData = doc.data()
-                            this.objEventData.date = formatDate(this.objEventData.date.toDate(), '/')
-                            resolve()
-                        } else {
-                            reject()
-                        }
-                    })
-                })
-            },
+            // ドキュメントデータはトップページで取得して渡される。
+            // getEventData: async function () {
+            //     return new Promise((resolve, reject) => {
+            //         if(this.evid==''){
+            //             reject()
+            //         }
+            //         const docRef = db.collection('events').doc(this.evid)
+            //         docRef.get().then(doc => {
+            //             if(doc.exists){
+            //                 this.eventData = doc.data()
+            //                 this.eventData.date = formatDate(this.eventData.date.toDate(), '/')
+            //                 resolve()
+            //             } else {
+            //                 reject()
+            //             }
+            //         })
+            //     })
+            // },
             hostClick: async function () {
-               const docRef = db.collection('consultants')
-               let query = docRef.where('uid', '==', this.objEventData.uid)
-               var objConsultantData = await query.get().then(docSnap => {
-                   return new Promise(resolve => {
-                        docSnap.forEach(doc => {
-                            resolve(Object.assign(doc.data()))
-                        })
-                   })
-               })
-               pushConsultantProfile(this, objConsultantData)
+                const docRef = db.collection('consultants')
+                const query = docRef.where('uid', '==', this.eventData.data.uid)
+                const docs = await query.get()
+                var objConsultantData = {}
+                if (docs.empty) {
+                    return
+                }
+                docs.forEach(doc => {
+                    if (doc.exists) {
+                        objConsultantData = doc
+                    }
+                })
+                console.log(objConsultantData)
+                pushConsultantProfile(this, new Consultant(objConsultantData))
             },
             hostSalonClick: async function () {
-                const docRef = await db.collection('salons')
-                let query = docRef.where('userID', '==', this.objEventData.uid)
-                var objSalonData = await query.get().then(docSnap => {
-                    return new Promise(resolve => {
-                        docSnap.forEach(doc => {
-                            resolve(Object.assign(doc.data()))
-                        })
-                    })    
-                })
-                pushSalonPage(this, objSalonData)
+                if (this.eventData.data.dalonId == '') {
+                    return
+                }
+                const doc = await db.collection('salons').doc(this.eventData.data.salonId)
+                // const query = docRef.where('userID', '==', this.eventData.data.uid)
+                // const docs = await query.get()
+                // var objSalonData = {}
+                // if (docs.exists) {
+                //     docs.forEach(doc => {
+                //         objSalonData = doc
+                //     })
+                // }
+                if (doc.exists) {
+                    pushSalonPage(this, doc.data())
+                }
+            },
+            formatDate: function (date, separator) {
+                return formatDate(date, separator)
             }
         },
         mounted() {
-            this.getEventData()
+            // ドキュメントデータはトップページで取得して渡される。
+            // this.getEventData()
         },
         beforedestroy() {
             //TODO: indexedDB

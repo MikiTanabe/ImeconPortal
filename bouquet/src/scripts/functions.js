@@ -1,4 +1,9 @@
-//指定した文字をdigitとして日付を返却する
+/**
+ * 指定した文字をdigitとして日付文字列を返却する
+ * @param {Date} date 対象日付
+ * @param {string} strDigit 分割文字列
+ * @returns フォーマットされた日付文字列
+ * */
 export function formatDate ( date, strDigit ) {
     var rtnDate = ''
     var tYear = date.getFullYear()
@@ -92,4 +97,24 @@ export function isNullOrUndefined(obj) {
  */
 export function isNullOrEmpty(str) {
     return isNullOrUndefined(str) || str == ''
+}
+
+/**
+ * CORSでFetchメソッドを呼び出す
+ * @param {String} url
+ * @returns {Object} レスポンス
+ */
+export async function callFetchMethod (url) {
+    return await fetch(url, {
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'include'
+    }).then(async response => {
+        if (!response.ok) {
+            throw new Error(await response.text())
+        }
+        return response.json()
+    }).catch(error => {
+        console.log('リクエストエラー', error)
+    })
 }

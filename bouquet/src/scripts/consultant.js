@@ -1,18 +1,21 @@
 import { db } from '@/firebase/firestore'
 
-export function getConsultantData(uid) {
-    return new Promise((resolve, reject) => {
-        const docRef = db.collection('consultants').where('uid', '==', uid)
-        docRef.get().then(docSnap => {
-            var consulData = new Map()
-            docSnap.forEach(doc => {
-                consulData.set('name', doc.get('consulName'))
-                consulData.set('salonName', doc.get('salonName'))
-            })
-            resolve(consulData)
-        }).catch(() => {
-            reject()
-        })
+/**
+ * ユーザIDからコンサルタントデータを取得する
+ * @param {String} uid ユーザID
+ * @returns consultantドキュメント
+ */
+export async function getConsultantData(uid) {
+    const docRef = db.collection('consultants').where('uid', '==', uid)
+    const docs = await docRef.get()
+    if (docs.empty) {
+        return null;
+    }
+    var docConsultant = null;
+    docs.forEach(doc => {
+        if (doc.exists) {
+            docConsultant = doc;
+        }
     })
-    
+    return docConsultant;
 }

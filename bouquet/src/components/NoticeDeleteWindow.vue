@@ -1,6 +1,6 @@
 <template>
     <div>
-        <delete-button :modal="true" :target="targetName" :disable="!deleteAble">btnText</delete-button>
+        <delete-button :modal="true" :target="targetName" :disable="!deleteAble">{{ btnText }}</delete-button>
         <modal-window :target="targetName" :btn2="true" :btn2Txt="btnText" @click="click">
             <div>
                 {{ message }}
@@ -49,7 +49,7 @@
             click: function () {
                 const modalName = '#' + this.targetName
                 this.$emit('click')
-                $( modalName ).modal('hide')
+                window.$( modalName ).modal('hide')
             }
         }
     }

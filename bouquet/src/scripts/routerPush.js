@@ -27,3 +27,23 @@ export function pushSalonPage(obj, parameter) {
         obj.$router.push('/')
     })
 }
+
+/**
+ * イベントページにイベントデータを渡して遷移する
+ * @param {*} obj this
+ * @param {*} parameter パラメータ
+ */
+export function pushEventPage(obj, parameter) {
+    const routeName = obj.$route.path.indexOf('/mypage') > -1 ? 'EventPageCh' : 'EventPage'
+    const objLink = {
+        name: routeName,
+        params: {
+            prEventData: parameter
+        }
+    }
+
+    obj.$router.push(objLink).catch(() => {
+        alert('エラーが発生しました。トップページに戻ります。')
+        obj.$router.push('/')
+    })
+}

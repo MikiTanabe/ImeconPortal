@@ -31,7 +31,7 @@
                 </div>
             </div>
             <div class="row">
-                <upload-img-form ref="imgForm" :prNumStorage="numStorage" :id="evId" :preview="prevImgUrl" />
+                <upload-img-form ref="imgForm" :prNumStorage="numStorage" :id="evId" :preview="prevImgUrl" :changePrvImg="true" @changePrvImg="changeImgFileCallback" />
             </div>
             <div class="form-group">
                 <div class="row">
@@ -57,6 +57,7 @@
                     </div>
                 </div>
             </div>
+            <!-- 未来に実装
             <div class="form-group">
                 <div class="row">
                     <label class="col-12" for="join">
@@ -75,12 +76,12 @@
                         <add-guest-window @click="getNewGuests"/>
                     </div>
                 </div>
-            </div>
+            </div> -->
             <div class="form-group">
                 <div class="row">
                     <div class="col-10 d-flex">
                         <pink-button @click="saveClick">{{ saveStr }}</pink-button>
-                        <notice-delete-window @click="deleteClick" :deleteAble="deleteAble" :prMessage="delMessage"/>
+                        <notice-delete-window @click="deleteClick" :deleteAble="deleteAble" :prMessage="delMessage" :prBtnText="'削除'"/>
                     </div>
                 </div>
             </div>
@@ -94,224 +95,227 @@
 </template>
 <script>
 import { db } from '@/firebase/firestore'
-import format from '@/scripts/eventsFormat.json'
-import { formatDate, copyObjectReactive } from '@/scripts/functions'
+import { formatDate } from '@/scripts/functions'
 import UploadImgForm from '@/components/UploadImgForm'
 import { storageNumbers } from '@/scripts/picture'
 import PinkButton from '@/components/PinkButton'
-import AddGuestWindow from '@/components/AddGuestWindow'
+// import AddGuestWindow from '@/components/AddGuestWindow'
 import NoticeDeleteWindow from '@/components/NoticeDeleteWindow'
 import ReturnLink from '@/components/ReturnLink'
 import { getUser } from '@/scripts/user'
+import { Event } from '@/models/eventModel'
 import { getConsultantData } from '@/scripts/consultant'
+import { getSalonData } from '@/scripts/salon'
 
     export default {
         name: 'EventEdit',
         data() {
             return {
-                objEventData: format,
+                eventData: this.prEventData,
                 numStorage: storageNumbers.EVENT,
                 arrGuests: new Array(),
-                prevImgUrl: '',
-                joinMembers: new Array()
+                prevImgUrl: this.prEventData.imgUrl
             }
         },
         components: {
             UploadImgForm,
-            AddGuestWindow,
+            // AddGuestWindow,
             PinkButton,
             NoticeDeleteWindow,
             ReturnLink
         },
+        props: {
+            prEventData: {
+                type: Event,
+                default: () => new Event()
+            }
+        },
         computed: {
             titleTxt: function () {
-                return this.evId == 'sample'? 'イベントの新規作成': 'イベントの編集'
+                return (this.evId == 'sample' || this.evId == '') ? 'イベントの新規作成': 'イベントの編集'
             },
             saveStr: function () {
-                return this.evId == 'sample'? 'イベントを追加': 'イベントの更新'
+                return (this.evId == 'sample' || this.evId == '') ? 'イベントを追加': 'イベントの更新'
             },
-            evId: function () {
-                return this.prEvId
+            evId: {
+                get: function () {
+                    return this.eventData.evId
+                },
+                set: function (val) {
+                    this.$set(this.eventData, 'date', val)
+                }
             },
             deleteAble: function () {
                 return this.evId == 'sample'? false: true
             },
             consultantName: {
-                set: function (val) {
-                    this.$set(this.objEventData, 'consultantName', val)
-                },
                 get: function () {
-                    return this.objEventData.consultantName
+                    return this.eventData.consultantName
+                },
+                set: function (val) {
+                    this.$set(this.eventData, 'consultantName', val)
                 }
             },
             date: {
-                set: function (val) {
-                    this.$set(this.objEventData, 'date', new Date(val))
-                },
                 get: function () {
-                    if(this.objEventData.date != this.defaultDate){
-                        //firebaseから帰ってくる日付データが独自Objectのためparse処理を分岐
-                        try{
-                            return formatDate(this.objEventData.date.toDate(), '-')
-                        } catch {
-                            return formatDate(this.objEventData.date, '-')
-                        }
-                        
-                    } else {
-                        return this.objEventData.date
-                    }
-                }
+                    return formatDate(this.eventData.date, '-')
+                },
+                set: function (val) {
+                    this.$set(this.eventData, 'date', new Date(val))
+                },
             },
+            /*
             delete: {
                 set: function (val) {
-                    this.$set(this.objEventData, 'delete', val == ''? new Array(): val)
+                    this.$set(this.eventData, 'delete', val == ''? new Array(): val)
                 },
                 get: function () {
-                    return this.objEventData.delete == ''? new Array(): this.objEventData.delete
+                    return this.eventData.delete == ''? new Array(): this.eventData.delete
                 }
-            },
+            },*/
             imgUrl: {
-                set: function (val) {
-                    this.$set(this.objEventData, 'imgUrl', val)
-                },
                 get: function () {
-                    return this.objEventData.imgUrl
+                    return this.eventData.imgUrl
+                },
+                set: function (val) {
+                    this.$set(this.eventData, 'imgUrl', val)
                 }
             },
             introduction: {
-                set: function (val) {
-                    this.$set(this.objEventData, 'introduction', val)
-                },
                 get: function () {
-                    return this.objEventData.introduction
+                    return this.eventData.introduction
+                },
+                set: function (val) {
+                    this.$set(this.eventData, 'introduction', val)
                 }
             },
+            /*
             join: {
                 set: function (val) {
-                    this.$set(this.objEventData, 'join', val == ''? new Array(): val)
+                    this.$set(this.eventData, 'join', val == ''? new Array(): val)
                 },
                 get: function () {
-                    return this.objEventData.join == ''? new Array(): this.objEventData.join
+                    return this.eventData.join == ''? new Array(): this.eventData.join
                 }
             },
             preJoin: {
                 set: function (val) {
-                    this.$set(this.objEventData, 'preJoin', val == ''? new Array(): val)
+                    this.$set(this.eventData, 'preJoin', val == ''? new Array(): val)
                 },
                 get: function () {
-                    return this.objEventData.preJoin == ''? new Array(): this.objEventData.preJoin
+                    return this.eventData.preJoin == ''? new Array(): this.eventData.preJoin
                 }
             },
+            */
             salonId: {
-                set: function (val) {
-                    this.$set(this.objEventData, 'salonId', val)
-                },
                 get: function () {
-                    return this.objEventData.salonId
+                    return this.eventData.salonId
+                },
+                set: function (val) {
+                    this.$set(this.eventData, 'salonId', val)
                 }
             },
             salonName: {
-                set: function (val) {
-                    this.$set(this.objEventData, 'salonName', val)
-                },
                 get: function () {
-                    return this.objEventData.salonName
+                    return this.eventData.salonName
+                },
+                set: function (val) {
+                    this.$set(this.eventData, 'salonName', val)
                 }
             },
             title: {
-                set: function (val) {
-                    this.$set(this.objEventData, 'title', val)
-                },
                 get: function () {
-                    return this.objEventData.title
+                    return this.eventData.title
+                },
+                set: function (val) {
+                    this.$set(this.eventData, 'title', val)
                 }
             },
             txtUrl: {
-                set: function (val) {
-                    this.$set(this.objEventData, 'txtUrl', val)
-                },
                 get: function () {
-                    return this.objEventData.txtUrl
+                    return this.eventData.txtUrl
+                },
+                set: function (val) {
+                    this.$set(this.eventData, 'txtUrl', val)
                 }
             },
             uid: {
-                set: function (val) {
-                    this.$set(this.objEventData, 'uid', val)
-                },
                 get: function () {
-                    return this.objEventData.uid
+                    return this.eventData.uid
+                },
+                set: function (val) {
+                    this.$set(this.eventData, 'uid', val)
                 }
             },
             upDate: {
-                set: function (val) {
-                    this.$set(this.objEventData, 'upDate', val)
-                },
                 get: function () {
-                    return this.objEventData.upDate
+                    return this.eventData.upDate
+                },
+                set: function (val) {
+                    this.$set(this.eventData, 'upDate', val)
                 }
             },
             dateStr: {
-                set: function (val) {
-                    this.$set(this.objEventData, 'date', new Date(val))
-                },
                 get: function () {
-                    return formatDate(this.objEventData.date.toDate(), '-')
+                    return formatDate(this.eventData.date.toDate(), '-')
+                },
+                set: function (val) {
+                    this.$set(this.eventData, 'date', new Date(val))
                 }
-            },
-            defaultDate: function () {
-                return formatDate(new Date(), '-')
             },
             delMessage: function () {
                 return 'イベント【' + this.title + '】を削除します。'
             }
         },
-        props: {
-            prEvId: {
-                type: String,
-                default: 'sample',
-                validator(val) {
-                   return (val == '' || val === 'undefined')? false: true
-                }
-            }
-        },
         methods: {
-            getEventData: async function () {
-                return new Promise(resolve => {
-                    const docRef = db.collection('events').doc(this.evId)
-                    docRef.get().then(doc => {
-                        if(doc.exists){
-                            copyObjectReactive(doc.data(), this.objEventData, this)
-                            this.prevImgUrl = doc.get('imgUrl')
-                        }
-                        resolve()
-                    })
-                })
-            },
             getImgUrl: function (url) {
                 this.imgUrl = url
             },
             saveClick: async function () {
-                this.$set(this.objEventData, 'upDate', new Date())
-                if(!Array.isArray(this.preJoin)){
-                    this.preJoin = new Array()
-                }
-                if(!Array.isArray(this.join)){
-                    this.join = new Array()
-                }
-                const docRef = db.collection('events')
-                docRef.doc(this.evId).get().then(doc => {
-                    if(doc.exists && this.evId!='sample'){
-                        this.updateEvent()
-                        .then(() => { alert('イベントデータを更新しました')})
-                    } else {
-                        this.addEvent()
-                        .then(() => { alert('イベントを新規登録しました') })
+                try {
+                    const docRef = db.collection('events')
+                    const doc = docRef.doc(this.evId)
+                    const docGet = await doc.get()
+                    console.log('docGet:', docGet)
+                    if (this.evId == '' || this.evId == 'sample') {
+                        // 新規登録の場合、ユーザ情報・コンサルタント情報・サロン情報を取得する
+                        const user = await getUser()
+                        this.uid = user.get('id')
+                        const consultant = await getConsultantData(this.uid)
+                        console.log('consulName:', consultant.get('consulName'))
+                        this.consultantName = consultant.get('consulName')
+                        const salon = await getSalonData(this.uid)
+                        console.log('salonData:', salon)
+                        this.salonId = salon.id
+                        this.salonName = salon.get('name')
                     }
-                }).catch(e => {
-                    console.log('データの更新に失敗しました', e)
-                    alert('イベントデータの' + (this.evId != '' || this.evId !== 'undefined'? '更新': '追加') + 'に失敗しました')
-                })
-                this.$router.push('/mypage/mypagehome').catch({})
+                    if (docGet.exists && this.evId!='sample') {
+                        // イベントの更新
+                        if (docGet.get('imgUrl') != this.prevImgUrl) {
+                            this.imgUrl = await this.$refs.imgForm.uploadImg()
+                        }
+                        this.eventData.setDocData(this.eventData)
+                        await this.eventData.update(doc)
+                        alert('イベントデータを更新しました')
+                    } else {
+                        // イベントの新規登録
+                        this.eventData.setDocData(this.eventData)
+                        await this.eventData.add(docRef)
+                        this.imgUrl = await this.$refs.imgForm.uploadImg()
+                        await docRef.doc(this.evId).set(
+                            {imgUrl: this.imgUrl},
+                            {merge: true}
+                        ).then(() => {
+                            alert('イベントデータを新規登録しました')
+                        })
+                    }
+
+                    // マイページホームに遷移する
+                    this.$router.push('/mypage/mypagehome').catch({})
+                } catch(e) {
+                    console.log(e)
+                    alert(this.titleTxt + 'に失敗しました')
+                }
             },
             deleteClick: async function () {
                 const docRef = db.collection('events').doc(this.evId)
@@ -319,6 +323,7 @@ import { getConsultantData } from '@/scripts/consultant'
                 alert('イベント【' + this.title + '】を削除しました')
                 this.$router.push('mypagehome').catch({})
             },
+            /*
             getGuestsName: async function () {
                 this.arrGuests.splice(0)
                 const docRef = db.collection('consultants')
@@ -350,7 +355,8 @@ import { getConsultantData } from '@/scripts/consultant'
                     })
                 }
                 this.arrGuests = wkArray.slice()
-            },
+            }, */
+            /*
             getNewGuests: function (val) {
                 val.forEach(guest => {
                     var wkArray = new Array()
@@ -360,13 +366,14 @@ import { getConsultantData } from '@/scripts/consultant'
                     this.preJoin = this.preJoin.concat(wkArray.slice())
                 })
                 this.getGuestsName()
-            },
+            }, */
+            /*
             addEvent: async function () {
                 return new Promise((resolve, reject) => {
                     const docRef = db.collection('events')
                     this.setConsultantData()
                     .then(() => {
-                        docRef.add(this.objEventData)
+                        docRef.add(this.eventData)
                     }).then(
                         this.$refs.imgForm.uploadImg()
                     ).then(
@@ -385,7 +392,7 @@ import { getConsultantData } from '@/scripts/consultant'
             updateEvent: async function () {
                 return new Promise((resolve, reject) => {
                     const docRef = db.collection('events')
-                    this.setConsultantData()
+                    // this.setConsultantData()
                     .then(
                         //TODO: uploadImgをもう一度使えるようにする
                         this.$refs.imgForm.uploadImg()
@@ -393,8 +400,8 @@ import { getConsultantData } from '@/scripts/consultant'
                         this.getImgUrl(url)
                         console.log('イベント画像取得')
                     }).then(() => {
-                        console.log('イベントID: ', this.evId, this.objEventData)
-                        docRef.doc(this.evId).set(this.objEventData, {marge: true})
+                        console.log('イベントID: ', this.evId, this.eventData)
+                        docRef.doc(this.evId).set(this.eventData, {marge: true})
                         console.log('イベント更新')
                     }).then(() => {
                         resolve()
@@ -403,32 +410,22 @@ import { getConsultantData } from '@/scripts/consultant'
                         reject()
                     }))
                 })
-            },
-            setConsultantData: async function () {
-                return new Promise((resolve, reject) => {
-                    getUser().then(mapUser => {
-                        this.uid = mapUser.get('id')
-                    }).then(() => getConsultantData(this.uid)
-                    ).then(mapConsultant => {
-                        this.consultantName = mapConsultant.get('name')
-                        this.salonName = mapConsultant.get('salonName')
-                    }).then(() => {
-                        resolve()
-                    }).catch(() => {
-                        reject()
-                    })
-                })
+            },*/
+            changeImgFileCallback: function (val) {
+                this.prevImgUrl = val
             }
         },
+        /*
         mounted: async function () {
             await this.getEventData()
             await this.getGuestsName()
             const user = await getUser()
             await getConsultantData(user.get('id'))
-        },
+        },*/
         created() {
             //TODO: デフォルト日付を本日日付にする
-            this.$set(this.objEventData, 'date', this.defaultDate)
+            // this.$set(this.eventData, 'date', this.defaultDate)
+            console.log(this.prEventData)
         }
     }
 </script>
