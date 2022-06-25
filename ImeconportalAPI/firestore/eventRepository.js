@@ -1,4 +1,6 @@
-const db = require('./firebaseContext.js');
+const db = require('./firebaseContext.js')
+const typesenseManager = require('../functions/typesenseManager.js');
+const { doc } = require('./firebaseContext.js');
 
 /**
  * eventsコレクションから開催日付が本日までのイベントを取得する
@@ -50,6 +52,29 @@ module.exports.GetEventsArrayByUserId = async function (uid) {
                 data: doc.data()
             })
         }
+    })
+
+    return eventList
+}
+
+module.exports.SearchEventData = async function (criteria) {
+    // 検索条件に一致するIDを取得する
+    const ids = await typesenseManager.searchEvents(criteria)
+
+    const docRef = db.collection('events')
+    const snapShot = await eventRef.where(db.FieldPath.documentId(), 'in', ids)
+                                   .where('date', '>=', new Date())
+                                   .orderBy('date', 'asc')
+                                   .orderBy('upDate', 'asc')
+                                   .get()
+    var eventList = []
+    if (snapShot.empty) {
+        return eventList
+    }
+    snapShot.forEach(doc => {
+        eventList.push({
+            doc
+        })
     })
 
     return eventList

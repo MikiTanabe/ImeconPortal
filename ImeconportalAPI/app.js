@@ -4,6 +4,7 @@ const eventRepository = require("./firestore/eventRepository.js");
 const listUtil = require("./functions/listUtil.js");
 const youtuRepository = require("./firestore/youtubeRepository.js");
 const youtuApi = require("./functions/youtuApi.js");
+const typesenseManager = require('./functions/typesenseManager.js')
 const youtuUrl = "https://www.youtube.com/watch?v=";
 
 //ポート番号
@@ -15,6 +16,12 @@ const URL = "https://bouquet.local.com";
 // expressモジュールをロードし、インスタンス化してappに代入
 var express = require("express");
 var app = express();
+
+// typesenseの用意
+typesenseManager.copyData()
+typesenseManager.onEventCreate()
+typesenseManager.onEventUpdate()
+typesenseManager.onEventUpdate()
 
 //3000番ポートで待ち受け
 app.listen(PORT, () => { console.log("Node.js is listening to PORT: ${PORT}")});
@@ -108,6 +115,24 @@ app.get("/api/movie/list", async (req, res) => {
         res.statusCode = 400;
     }
 });
+
+/**
+ * イベントを検索する
+ * @param res レスポンスオブジェクト
+ * @oaram req リクエストオブジェクト
+ */
+app.post('/api/typesense/events/list', async (req, res) => {
+    try {
+        SetCORS(res)
+        const criteria = req.body.criteria
+        const searchResults = await eventRepository.SearchEventData(criteria)
+        res.json(searchResults)
+        // TODO: Vueの方で検索結果呼び出し
+    } catch(e) {
+        console.log(e)
+        res.statusCode = 400
+    }
+})
 
 /**
  * CORSを設定する
