@@ -23,7 +23,7 @@ services:
     DOMAINS: 'bouquet.local.com -> http://bouquet:8081,
      imecon.portal.api -> http://imecon_portal_api:3000,
      imecon.portal.api.develop -> http://imecon_portal_api:9229,
-     imecon.portal.typesense -> https://imecon_portal_api:443'
+     imecon.portal.typesense -> http://typesense:8108'
     STAGE: local
   #extra_hosts:
   #  - 'bouquet.local.com:127.0.0.1'
@@ -66,7 +66,7 @@ services:
   command: /bin/sh
  typesense:
    image: typesense/typesense:0.23.0
-   # entrypoint: sh -c '/opt/typesense-server --data-dir /data --api-key=imp-typesense-api-key --enable-cors'
+   entrypoint: sh -c '/opt/typesense-server --data-dir /data --api-key=imp-typesense-api-key --enable-cors'
    ports:
    - '8108:8108'
    volumes:

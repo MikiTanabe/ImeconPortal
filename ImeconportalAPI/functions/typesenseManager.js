@@ -1,13 +1,14 @@
 const Typesense = require('typesense')
-const api_key = require('api_key.json')
-const db = require('./firebaseContext.js')
-const stringUtil = require('stringUtil.js')
+const api_key = require('./api_key.json')
+const db = require('../firestore/firebaseContext.js')
+const stringUtil = require('./stringUtil.js')
 const { artifactregistry_v1beta1 } = require('googleapis')
 
 let client = new Typesense.Client({
+    // TODO:typesemseサーバの作成
     'nodes': [{
-        'host': 'imecon_portal_typesense.com',
-        'port': '443',
+        'host': 'localhost',
+        'port': '8108',
         'protocol': 'https'
     }],
     'apiKey': api_key.typesense_local_key,
@@ -32,53 +33,53 @@ client.collections().create(eventCollecton)
 /**
  * イベント作成時
  */
-module.exports.onEventCreate = db.document('/events/{eventId}')
-                          .onCreate((snapshot, context) => {
-                              id = context.params.eventId
-                              const { title, introduction, salonName, consultantName, date }
-                              = snapshot.data()
-                              document = {
-                                    id,
-                                    allStr: stringUtil.makeBigram(title) + ' '
-                                            + stringUtil.makeBigram(introduction) + ' '
-                                            + stringUtil.makeBigram(salonName) + ' '
-                                            + stringUtil.makeBigram(consultantName),
-                                    date: date.toMillis()
-                              }
-
-                              // eventsドキュメントをtypesenseコレクションに追加する
-                              return client.collections('events').documents().create(document)
-                          })
+//module.exports.onEventCreate = db.collection('/events/{eventId}')
+//                         .onCreate((snapshot, context) => {
+//                             id = context.params.eventId
+//                             const { title, introduction, salonName, consultantName, date }
+//                             = snapshot.data()
+//                             document = {
+//                                   id,
+//                                   allStr: stringUtil.makeBigram(title) + ' '
+//                                           + stringUtil.makeBigram(introduction) + ' '
+//                                           + stringUtil.makeBigram(salonName) + ' '
+//                                           + stringUtil.makeBigram(consultantName),
+//                                   date: date.toMillis()
+//                             }
+//
+//                             // eventsドキュメントをtypesenseコレクションに追加する
+//                             return client.collections('events').documents().create(document)
+//                         })
 
 /**
  * イベント更新時
  */
-module.exports.onEventUpdate = db.document('/events/{eventId}')
-                          .onUpdate((cahnge, context) => {
-                              // 更新値を取得する
-                              const { id, title, introduction, salonName, consultantName, date }
-                              = change.after.data()
-                              document = {
-                                  id,
-                                  allStr: stringUtil.makeBigram(title) + ' '
-                                          + stringUtil.makeBigram(introduction) + ' '
-                                          + stringUtil.makeBigram(salonName) + ' '
-                                          + stringUtil.makeBigram(consultantName),
-                                  date: date.toMillis()
-                              }
-                              return client.collections('events').documents(id).update(document)
-                          })
+// module.exports.onEventUpdate = db.document('/events/{eventId}')
+//                           .onUpdate((cahnge, context) => {
+//                               // 更新値を取得する
+//                               const { id, title, introduction, salonName, consultantName, date }
+//                               = change.after.data()
+//                               document = {
+//                                   id,
+//                                   allStr: stringUtil.makeBigram(title) + ' '
+//                                           + stringUtil.makeBigram(introduction) + ' '
+//                                           + stringUtil.makeBigram(salonName) + ' '
+//                                           + stringUtil.makeBigram(consultantName),
+//                                   date: date.toMillis()
+//                               }
+//                               return client.collections('events').documents(id).update(document)
+//                           })
 
 /**
  * イベント削除時
  */
-module.exports.onEventDelete = db.firestore.document('events/{eventId}')
-                          .onDelete((snap, context) => {
-                              // 削除するデータのIDを取得する
-                              id = context.params.eventId
-
-                              return client.collections('event').documents(id).delete()
-                          })
+// module.exports.onEventDelete = db.firestore.document('events/{eventId}')
+//                           .onDelete((snap, context) => {
+//                               // 削除するデータのIDを取得する
+//                               id = context.params.eventId
+// 
+//                               return client.collections('event').documents(id).delete()
+//                           })
 
 /**
  * eventsコレクションをtypesenseにコピーする
@@ -96,7 +97,7 @@ module.exports.copyData = async function () {
             // firebaseにデータがなかったら終了
             return 0
         }
-        snap.foreach(doc => {
+        snap.foreach(async doc => {
             const data = doc.data()
             const document = {
                 id: doc.id,

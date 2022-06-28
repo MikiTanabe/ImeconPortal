@@ -118,3 +118,25 @@ export async function callFetchMethod (url) {
         console.log('リクエストエラー', error)
     })
 }
+
+/**
+ * CORSでfetchメソッドを呼び出す(POST)
+ * @param {String} url
+ * @param {Object} data
+ * @returns {Object} レスポンス
+ */
+export async function callFetchMethodPost (url, data) {
+    return await fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        data: data,
+        credentials: 'include'
+    }).then(async response => {
+        if (!response.ok) {
+            throw new Error(await response.text())
+        }
+        return response.json()
+    }).catch(error => {
+        console.log('リクエストエラー', error)
+    })
+}

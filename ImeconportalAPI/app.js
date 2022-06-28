@@ -19,9 +19,9 @@ var app = express();
 
 // typesenseの用意
 typesenseManager.copyData()
-typesenseManager.onEventCreate()
-typesenseManager.onEventUpdate()
-typesenseManager.onEventUpdate()
+// typesenseManager.onEventCreate()
+// typesenseManager.onEventUpdate()
+// typesenseManager.onEventUpdate()
 
 //3000番ポートで待ち受け
 app.listen(PORT, () => { console.log("Node.js is listening to PORT: ${PORT}")});

@@ -10,6 +10,7 @@ import SalonPage from '@/views/SalonPage.vue'
 import ConsultantProfile from '@/views/ConsultantProfile.vue'
 import ConsultantEdit from '@/views/ConsultantEdit.vue'
 import EventEdit from '@/views/EventEdit.vue'
+import EventSearch from '@/views/EventSearch.vue'
 import { auth } from '@/firebase/firestore'
 
 Vue.use(Router)
@@ -86,6 +87,12 @@ let router = new Router({
                     path: 'eventedit',
                     name: 'EventEdit',
                     component: EventEdit,
+                    props: true
+                },
+                {
+                    path: 'eventsearch',
+                    name: 'EventSearch',
+                    component: EventSearch,
                     props: true
                 }
             ]
