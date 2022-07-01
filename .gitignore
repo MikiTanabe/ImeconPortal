@@ -11,7 +11,11 @@ bouquet/node_modules
 bouquet/dist
 .DS_Store
 
-#firebase
+# typesense
+typesense/typesense-server.env
+typesense/aliases.sh
+
+# firebase
 bouquet/src/firebaseconfig.json
 
 # local env files

@@ -2,20 +2,18 @@ const Typesense = require('typesense')
 const api_key = require('./api_key.json')
 const db = require('../firestore/firebaseContext.js')
 const stringUtil = require('./stringUtil.js')
-const { artifactregistry_v1beta1 } = require('googleapis')
 
-let client = new Typesense.Client({
-    // TODO:typesemseサーバの作成
+const client = new Typesense.Client({
     'nodes': [{
-        'host': 'localhost',
-        'port': '8108',
+        'host': 'imecon.portal.typesense',
+        'port': '443',
         'protocol': 'https'
     }],
     'apiKey': api_key.typesense_local_key,
     'connectionTimeoutSeconds': 2
 })
 
-const eventCollecton = {
+const eventCollection = {
     'name': 'events',
     'fields': [
         {'name': 'id', 'type': 'string'},
@@ -28,7 +26,7 @@ const eventCollecton = {
     'default_sorting_field': 'date'
 }
 
-client.collections().create(eventCollecton)
+// client.collections().create(eventCollection)
 
 /**
  * イベント作成時

@@ -64,9 +64,13 @@ services:
   stdin_open: true
   tty: true
   command: /bin/sh
+  depends_on: 
+  - typesense
  typesense:
    image: typesense/typesense:0.23.0
-   entrypoint: sh -c '/opt/typesense-server --data-dir /data --api-key=imp-typesense-api-key --enable-cors'
+   env_file:
+    - ./typesense/typesense-server.env
+   entrypoint: sh -c '/opt/typesense-server --data-dir $${DATA_DIR} --api-key=$${API_KEY} --enable-cors'
    ports:
    - '8108:8108'
    volumes:
