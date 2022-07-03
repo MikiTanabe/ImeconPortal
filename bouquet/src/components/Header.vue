@@ -32,7 +32,7 @@
                                         </button>
                                     </div>
                                     <div class="col-3 p-0">
-                                        <button class="menuBtn" :class="{menuBtnActive: isCurrentPath.searchEvent}" type="button" @click="showContent('searchevent')">
+                                        <button class="menuBtn" :class="{menuBtnActive: isCurrentPath.searchEvent}" type="button" @click="showContent('/searchevent')">
                                             <div class="d-flex align-items-center justify-content-center">
                                                 <p>イベント検索</p>
                                             </div>

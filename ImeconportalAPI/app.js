@@ -4,7 +4,7 @@ const eventRepository = require("./firestore/eventRepository.js");
 const listUtil = require("./functions/listUtil.js");
 const youtuRepository = require("./firestore/youtubeRepository.js");
 const youtuApi = require("./functions/youtuApi.js");
-const typesenseManager = require('./functions/typesenseManager.js')
+// const typesenseManager = require('./functions/typesenseManager.js')
 const youtuUrl = "https://www.youtube.com/watch?v=";
 
 //ポート番号
@@ -18,7 +18,8 @@ var express = require("express");
 var app = express();
 
 // typesenseの用意
-typesenseManager.copyData()
+// typesenseManager.createEventCollection()
+// typesenseManager.copyData()
 // typesenseManager.onEventCreate()
 // typesenseManager.onEventUpdate()
 // typesenseManager.onEventUpdate()

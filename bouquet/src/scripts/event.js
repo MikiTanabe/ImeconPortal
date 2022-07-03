@@ -46,3 +46,5 @@ export async function eventSearch(criteria) {
         query = docRef.where('date', comparison, criteria.date)
     }
 }
+
+// TODO: typesenseをこちらで書く

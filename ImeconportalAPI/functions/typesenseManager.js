@@ -3,11 +3,12 @@ const api_key = require('./api_key.json')
 const db = require('../firestore/firebaseContext.js')
 const stringUtil = require('./stringUtil.js')
 
+// TODO: https-portalにSSLで接続
 const client = new Typesense.Client({
     'nodes': [{
-        'host': 'imecon.portal.typesense',
-        'port': '443',
-        'protocol': 'https'
+        'host': 'typesense',
+        'port': '8108',
+        'protocol': 'http'
     }],
     'apiKey': api_key.typesense_local_key,
     'connectionTimeoutSeconds': 2
@@ -26,7 +27,7 @@ const eventCollection = {
     'default_sorting_field': 'date'
 }
 
-// client.collections().create(eventCollection)
+module.exports.createEventCollection = () =>{ client.collections().create(eventCollection) }
 
 /**
  * イベント作成時

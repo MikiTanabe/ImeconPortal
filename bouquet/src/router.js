@@ -48,6 +48,12 @@ let router = new Router({
             props: true
         },
         {
+            path: '/searchevent',
+            name: 'SearchEvent',
+            component: EventSearch,
+            props: true
+        },
+        {
             path: '/mypage',
             name: 'MyPage',
             component: MyPage,
@@ -87,12 +93,6 @@ let router = new Router({
                     path: 'eventedit',
                     name: 'EventEdit',
                     component: EventEdit,
-                    props: true
-                },
-                {
-                    path: 'eventsearch',
-                    name: 'EventSearch',
-                    component: EventSearch,
                     props: true
                 }
             ]
