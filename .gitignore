@@ -9,6 +9,7 @@ ImeconPortalAPI/functions/api_key.json
 bouquet/.DS_Store
 bouquet/node_modules
 bouquet/dist
+bouquet/src/typesenseConfig.json
 .DS_Store
 
 # typesense

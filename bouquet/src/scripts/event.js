@@ -1,10 +1,6 @@
 import { db } from '@/firebase/firestore'
-import { isNullOrEmpty } from './functions'
-
-export const DATE_COMPATE_ALL = 0
-export const DATE_COMPARE_BEFORE = 1
-export const DATE_COMPARE_AFTER = 2
-export const DATE_COMPARE_TODAY = 3
+ // import { isNullOrEmpty } from './functions'
+import { searchEvents, DATE_COMPARISON_TODAY } from '@/scripts/typesenseManager'
 
 export class SearchEventCriteria {
     /**
@@ -12,9 +8,10 @@ export class SearchEventCriteria {
      */
     constructor() {
         this.date = new Date()
-        this.dateComparison = this.DATE_COMPARE_ALL
-        this.host = ''
-        this.freeWord = ''
+        this.dateComparison = DATE_COMPARISON_TODAY
+        // this.host = ''
+        this.keyWords = ''
+        console.log('SearchEventCriteria created!')
     }
 }
 
@@ -23,28 +20,25 @@ export class SearchEventCriteria {
  * @param {SearchEventCriteria} criteria 
  */
 export async function eventSearch(criteria) {
-    const docRef = db.collection('events')
-    var comparison
-    var query
+    console.log(criteria)
+    // 検索条件に一致するIDを取得する
+    const ids = await searchEvents(criteria)
     
-    // TODO: typesenseで検索
-    if (criteria.date != undefined && isNullOrEmpty(criteria.date)) {
-        // 検索条件に日付が入っている場合
-        switch (criteria.dateComparison) {
-            case DATE_COMPARE_ALL:
-                break
-            case DATE_COMPARE_BEFORE:
-                comparison = '<='
-                break
-            case DATE_COMPARE_TODAY:
-                comparison = '=='
-                break
-            case DATE_COMPARE_AFTER:
-                comparison = '>='
-                break
-        }
-        query = docRef.where('date', comparison, criteria.date)
+    const docRef = db.collection('events')
+    const snapShot = await docRef.where(db.FieldPath.documentId(), 'in', ids)
+                                 .where('date', '>=', new Date())
+                                 .orderBy('date', 'asc')
+                                 .orderBy('upDate', 'asc')
+                                 .get()
+    var eventList = new Array()
+    if (snapShot.empty) {
+        return eventList
     }
-}
+    snapShot.forEach(doc => {
+        eventList.push({
+            doc
+        })
+    })
 
-// TODO: typesenseをこちらで書く
+    return eventList
+}

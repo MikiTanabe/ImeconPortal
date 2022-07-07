@@ -14,8 +14,9 @@
                     </label>
                     <div class="input-group form-inline col-12 col-md-8">
                         <input v-model="date" class="form-control calender" type="date" :disabled="notUse" id="event-date" />
-                        <select v-model="criteria.dateComparison" class="form-control">
-                            <option v-for="item in selectList" v-bind:key="item.value" :value="item.value">
+                        <!-- TODO: optionにvalueを入れる -->
+                        <select v-model="dateComparison" class="form-control">
+                            <option v-for="item in selectList" v-bind:key="item.value" v-bind:value="item.value">
                                 {{ item.text }}
                             </option>
                         </select>
@@ -26,12 +27,12 @@
                 <div class="input-group form-inline">
                     <label>
                         キーワード:
-                        <input v-model="criteria.KeyWords" class="form-conrtol" placeholder="例)Bouquet パーソナルカラー" />
+                        <input v-model="keyWords" class="form-conrtol" placeholder="例)Bouquet パーソナルカラー" />
                     </label>
                 </div>
             </div>
             <div class="col-12 col-md-1 d-flex justify-content-md-end">
-                <button type="button" class="btn btn-light btn-block">
+                <button type="button" class="btn btn-light btn-block" @click="searchClick">
                     検索
                 </button>
             </div>
@@ -39,6 +40,7 @@
     </div>
     <div class="row">
         <div class="col-12">
+            <p v-if="eventList.length == 0">{{ message }}</p>
             <div v-for="event in eventList" v-bind:key="event.id">
                 {{ event.name }}
             </div>
@@ -48,24 +50,21 @@
 </template>
 
 <script>
-import { callFetchMethodPost, formatDate, bqDateParse } from '@/scripts/functions'
+import { formatDate, bqDateParse } from '@/scripts/functions'
+import { eventSearch, DATE_COMPARISON_NOUSE, DATE_COMPARISON_TODAY, DATE_COMPARISON_BEFORE, DATE_COMPARISON_AFTER, SearchEventCriteria } from '@/scripts/event'
 
-const DATE_COMPARISON_NOUSE = -1
-const DATE_COMPARISON_TODAY = 0
-const DATE_COMPARISON_BEFORE = 1
-const DATE_COMPARISON_AFTER = 2
+// const DATE_COMPARISON_NOUSE = -1
+// const DATE_COMPARISON_TODAY = 0
+// const DATE_COMPARISON_BEFORE = 1
+// const DATE_COMPARISON_AFTER = 2
 
-const searchEvUrl = 'https://imecon.portal.api/api/typesense/events/list'
+// const searchEvUrl = 'https://imecon.portal.api/api/typesense/events/list'
 
 export default {
     name: 'EventSearch',
     data() {
         return {
-            criteria: {
-                date: new Date(),
-                dateComparison: 0,
-                KeyWords: '' 
-            },
+            criteria: new SearchEventCriteria(),
             selectList: [
                 {
                     text: '指定しない',
@@ -90,7 +89,8 @@ export default {
     },
     computed: {
         notUse() {
-            return this.criteria.dateComparison == DATE_COMPARISON_NOUSE
+            console.log(this.dateComparison)
+            return this.dateComparison == DATE_COMPARISON_NOUSE
         },
         date: {
             get () {
@@ -99,18 +99,40 @@ export default {
             set (val) {
                 this.criteria.date = bqDateParse(val)
             }
+        },
+        dateComparison: {
+            get () {
+                return this.criteria.dateComparison
+            },
+            set (val) {
+                this.$set(this.criteria, 'dateComparison', val)
+            }
+        },
+        keyWords: {
+            get () {
+                return this.criteria.keyWords
+            },
+            set (val) {
+                this.$set(this.criteria, 'keyWords', val)
+            }
         }
     },
-    /**
-     * 検索ボタン押下
-     */
-    searchClick: async function () {
-        const data = await callFetchMethodPost(searchEvUrl, { criteria: this.criteria })
-        if (data == null) {
-            this.message = '条件に合致するイベントが存在しません。'
+    methods: {
+        /**
+         * 検索ボタン押下
+         */
+        searchClick: async function () {
+            console.log('searchStart!')
+            const data = await eventSearch(this.criteria)
+            console.log('searchedData:', data)
+            if (data == null || data.lentgh == 0) {
+                this.message = '条件に合致するイベントが存在しません。'
+                return false
+            }
+            console.log('検索結果: ', data)
+            this.eventList = data
             return false
         }
-        this.eventList = data
     }
 }
 </script>
