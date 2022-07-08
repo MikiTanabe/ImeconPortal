@@ -76,7 +76,6 @@
 <script>
     import firebase from '@/firebase/firestore'
     import { signOut } from '@/scripts/auth'
-
     export default {
         name: 'Header',
         data() {
@@ -110,7 +109,7 @@
             isCurrentPath: function() {
                 return {
                     searchSalon: '/searchSalon' == this.$route.path,
-                    searchEvent: '/searchEvent' == this.$route.path,
+                    searchEvent: '/searchevent' == this.$route.path,
                     myPage: ('/signin' == this.$route.path ||
                              '/signup' == this.$route.path ||
                              this.$route.path.match('/mypage.*') != null),
@@ -144,17 +143,14 @@
         white-space: nowrap;
         margin: 0px;
     }
-
     .icon-p {
         margin: 0px;
         white-space: pre-line;
         font-size: 0.5em;
     }
-
     .icon {
         color: #c73576;
     }
-
     @media screen and (min-width:768px) {
         .icon-p {
             font-size: 1em;

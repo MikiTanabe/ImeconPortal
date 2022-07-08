@@ -128,7 +128,6 @@ app.post('/api/typesense/events/list', async (req, res) => {
         const criteria = req.body.criteria
         const searchResults = await eventRepository.SearchEventData(criteria)
         res.json(searchResults)
-        // TODO: Vueの方で検索結果呼び出し
     } catch(e) {
         console.log(e)
         res.statusCode = 400

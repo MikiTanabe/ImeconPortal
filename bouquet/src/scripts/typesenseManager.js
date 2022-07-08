@@ -16,7 +16,7 @@ const client = new Typesense.Client({
         'protocol': 'https'
     }],
     'apiKey': config.typesense_api_key,
-    'connectionTimeoutSeconds': 2
+    'connectionTimeoutSeconds': 6
 })
 
 const eventCollection = {
@@ -147,7 +147,7 @@ export async function searchEvents (criteria) {
     // ----------------------
     // 日付
     // ----------------------
-    if (criteria.date != undefined && criteria.dateComparison != 0) {
+    if (criteria.date != undefined && criteria.dateComparison != DATE_COMPARISON_NOUSE) {
         var q_date = 'date:'
         const dateMillis = Date.parse(criteria.date)
         if (criteria.dateComparison == DATE_COMPARISON_AFTER) {
@@ -172,7 +172,7 @@ export async function searchEvents (criteria) {
     } else {
         queryString += '*'
     }
-    console.log('queryString: ', queryString)
+    console.log('queryString: ', queryString, filterString)
     const search = {
         'q': queryString,
         'query_by': 'allStr',

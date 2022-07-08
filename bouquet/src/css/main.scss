@@ -31,9 +31,9 @@ header {
 }
 
 .header-logo {
-    height: 65px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    /* height: 3rem; */
+    padding-top: 1rem;
+    padding-bottom: 1rem;
 }
 
 .header-logo img {
@@ -321,4 +321,23 @@ button:disabled {
 
 .hover-pointer-pointer {
     cursor: pointer;
+}
+
+/* イベントページ */
+div.event-panel {
+    background-color: $annin-white;
+    border-radius: 0.2rem;
+}
+
+div.event-panel .img-wrapper {
+    width: 10rem;
+    height: 10rem;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+div.event-panel h5 {
+    text-overflow: ellipsis;
 }

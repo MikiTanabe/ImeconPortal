@@ -3,8 +3,13 @@
     <div class="row">
         <div class="col-12">
             <h2 class="title-gold with-circle">新着イベント</h2>
+            <div class="d-flex align-items-center justify-content-center" v-if="eventLoading">
+                <div class="col-6">
+                    <img src="@/img/loading.gif" class="img-fluid">
+                </div>
+            </div>
             <!-- イベントリスト -->
-            <div class="row">
+            <div class="row" v-if="eventList != null">
                 <!-- 一件目のイベント -->
                 <div class="col-12 col-md-6 p-0" v-if="0<eventList.length">
                     <div class="row">
@@ -37,12 +42,18 @@
                     </div>
                 </div>
             </div>
+            <p v-if="eventList == null">開催予定のイベント情報がありません。</p>
             <!-- <fb-login ref="fbLogin" /> -->
         </div>
     </div>
     <div class="row">
         <div class="col-12 col-md-6">
             <h2 class="title-gold with-circle pt-2">Instagram</h2>
+            <div class="d-flex align-items-center justify-content-center" v-if="igLoading">
+                <div class="col-6">
+                    <img src="@/img/loading.gif" class="img-fluid">
+                </div>
+            </div>
             <div class="row">
                 <div class="col-12 col-md-3 p-0" v-for="igMedia in igList" :key="igMedia.media_url">
                     <div class="square-box" style="overflow:hidden;">
@@ -55,6 +66,11 @@
         </div>
         <div class="col-12 col-md-6">
             <h2 class="title-gold with-circle pt-2">Youtube</h2>
+            <div class="d-flex align-items-center justify-content-center" v-if="youtuLoading">
+                <div class="col-6">
+                    <img src="@/img/loading.gif" class="img-fluid">
+                </div>
+            </div>
             <div class="row">
                 <div class="col-12 col-md-3 p-0 overflow-hidden" v-for="youtube in youtuList" :key="youtube.id">
                     <div class="square-box">
@@ -85,7 +101,10 @@
             return {
                 igList: new Array(),
                 eventList: new Array(),
-                youtuList: new Array()
+                youtuList: new Array(),
+                eventLoading: true,
+                youtuLoading: true,
+                igLoading: true
             }
         },
         methods: {
@@ -94,21 +113,45 @@
              * @returns {Object} IGMEDIAリスト
              */
             GetIGList: async function() {
-                return await this.CallFetchMethod(igUrl)
+                return new Promise((resolve) => {
+                    this.CallFetchMethod(igUrl)
+                    .then(igList => {
+                        this.igList = igList
+                        this.igLoading = false
+                        resolve()
+                    })
+                    .catch(() => resolve())
+                })
             },
             /**
              * イベントリストを取得する
              * @returns {Object} イベントリスト
              */
             GetEventList: async function() {
-                return await this.CallFetchMethod(evUrl)
+                return new Promise(resolve => {
+                    this.CallFetchMethod(evUrl)
+                    .then(evList => {
+                        this.eventList = evList
+                        this.eventLoading = false
+                        resolve()
+                    })
+                    .catch(() => resolve())
+                })
             },
             /**
             * Youtube動画リストを取得する
             * @returns {Object} Youtube動画リスト
              */
             GetYoutuList: async function() {
-                return await this.CallFetchMethod(youtuUrl)
+                return new Promise(resolve => {
+                    this.CallFetchMethod(youtuUrl)
+                    .then(youtuList => {
+                        this.youtuList = youtuList
+                        this.youtuLoading = false
+                        resolve()
+                    })
+                    .catch(() => resolve())
+                })
             },
             /**
              * CORSでFetchメソッドを呼び出す
@@ -137,16 +180,14 @@
                 pushEventPage(this, event)
             }
         },
-        mounted: async function () {
+        created: async function () {
             //Instagram投稿を取得する
-            var igList = this.GetIGList()
+            // var igList = this.GetIGList()
             //イベントを取得する
-            var eventList = this.GetEventList()
+            // var eventList = this.GetEventList()
             //youtube動画を取得する
-            var youtuList = this.GetYoutuList()
-            this.igList = await igList
-            this.eventList = await eventList
-            this.youtuList = await youtuList
+            // var youtuList = this.GetYoutuList()
+            await Promise.all([this.GetIGList(), this.GetEventList(), this.GetYoutuList()])
         }
     }
 </script>
