@@ -1,21 +1,16 @@
 <template>
     <header class="fixed-top">
-        <div class="row">
-            <div class="col-12">
-                <div class="d-flex">
-                    <div class="col-4">
-                        <div class="row">
-                            <div class="col-12">
-                                <p class="small md-medium ml-1 d-none d-lg-block">イメージコンサルティングのイベント・サロン交流サイト</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12 d-flex justify-content-start p-0 pl-2">
-                                <div class="header-logo">
-                                    <router-link to="/">
-                                        <img src="@/img/bouquet_logo-long.png" class="img-fluid">
-                                    </router-link>
-                                </div>
+        <div class="row header-wrapper">
+            <div class="col-12 h-100">
+                <div class="d-none d-md-flex h-100">
+                    <!-- PCメニュー START -->
+                    <div class="col-4 d-flex flex-column h-100">
+                        <div class="logo-wrapper">
+                        <p class="small md-medium ml-1 d-none d-lg-block">イメージコンサルティングのイベント・サロン交流サイト</p>
+                            <div class="d-flex justify-content-start align-items-center logo-img-wrapper">
+                                <router-link to="/">
+                                    <img src="@/img/bouquet_logo-long.png">
+                                </router-link>
                             </div>
                         </div>
                     </div>
@@ -23,7 +18,6 @@
                         <div class="row">
                             <div class="col-12 p-0">
                                 <div class="d-flex justify-content-end align-items-center">
-                                    <!-- PCメニュー -->
                                     <div class="col-3 p-0">
                                         <button class="menuBtn" :class="{menuBtnActive: isCurrentPath.top}" type="button" @click="showContent('/')">
                                             <div class="d-flex align-items-center justify-content-center">
@@ -68,6 +62,34 @@
                             </div>
                         </div>
                     </div>
+                    <!-- PCメニュー END -->
+                </div>
+                <div class="d-flex d-md-none h-100">
+                    <!-- スマホメニュー START -->
+                    <div class="col-2"></div>
+                    <div class="col-8 d-flex flex-column align-items-center p-0">
+                        <div class="logo-wrapper">
+                            <!-- キャッチコピー -->
+                            <p class="text-wrap p-0">
+                                イメージコンサルティングのイベント・サロン交流サイト
+                            </p>
+                            <!-- ロゴ -->
+                            <div class="d-flex align-items-center logo-img-wrapper">
+                                <router-link to="/">
+                                    <img src="@/img/bouquet_logo-long.png">
+                                </router-link>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2 d-flex justify-content-center align-items-center bg-beige">
+                        <button @click="slideMenuOpenClose">
+                            <fa-icon :icon="['fas', 'bars']" class="phone-menu" size="lg"/>
+                        </button>
+                    </div>
+                    <div class="d-block d-md-none" v-if="!isStart">
+                        <slide-menu :isOpen="slideMenuIsOpen" :auth="auth" @menuOpenClose="slideMenuOpenClose"/>
+                    </div>
+                <!-- スマホメニュー END -->
                 </div>
             </div>
         </div>
@@ -76,12 +98,19 @@
 <script>
     import firebase from '@/firebase/firestore'
     import { signOut } from '@/scripts/auth'
+    import SlideMenu from '@/components/SlideMenu.vue'
+
     export default {
         name: 'Header',
+        components: {
+            SlideMenu
+        },
         data() {
             return {
                 auth: false,
-                currentPath: ''
+                currentPath: '',
+                slideMenuIsOpen: false,
+                isStart: true
             }
         },
         computed: {
@@ -129,6 +158,10 @@
             showContent: function (route) {
                 //router-linkの代わり
                 this.$router.push(route).catch({})
+            },
+            slideMenuOpenClose: function () {
+                this.isStart = false
+                this.slideMenuIsOpen = !this.slideMenuIsOpen
             }
         },
         mounted() {
