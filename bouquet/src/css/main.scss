@@ -57,10 +57,15 @@ header {
     }
 }
 
+header p {
+    color: $annin-white;
+}
+
 body {
     font-family: 'M PLUS 1p', sans-serif;
 }
 
+/* footer */
 footer {
     background-color: $vietnam-beige;
     height: 4em;
@@ -68,13 +73,21 @@ footer {
     width: 100%;
 }
 
-header p {
-    color: $annin-white;
+.footer-btn {
+    display: relative;
+    a {
+        display: block;
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
 }
 
 .container-fluid {
-    padding-top: 100px;
-    padding-bottom: 50px;
+    padding-top: 70px;
+    padding-bottom: 4.5em;
 }
 
 /* メニューボタン PC */
@@ -120,7 +133,7 @@ header p {
 
 /* スライドメニュー */
 .slide-menu {
-    background-color: $vietnam-beige;
+    background-color: $annin-white;
     height: 100vh;
     position: fixed;
     width: 60vw;
@@ -133,7 +146,7 @@ header p {
     li {
         padding: 12px;
         color: dimgray;
-        border-bottom: $annin-white solid 1px;
+        border-bottom: dimgray solid 1px;
         list-style-type: none;
         text-align: end;
         a {
@@ -195,8 +208,14 @@ div.block-ui {
     .container {
         padding-top: 75px;
     }
+
+    .container-fluid {
+        padding-top: 100px;
+        padding-bottom: 50px;
+    }
 }
 
+/* lgサイズ〜 */
 @media screen and (min-width:992px){
     header {
         height: 90px;

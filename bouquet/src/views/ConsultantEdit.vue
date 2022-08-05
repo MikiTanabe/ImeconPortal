@@ -89,9 +89,13 @@
                     <input type="url" v-model="urlBlog" aria-label="UrlBlog" placeholder="https://"
                     area-describedby="url-blog-label" class="form-control">
                 </div>
-                <div class="d-flex flex-wrap justify-content-start mb-3">
-                    <pink-button @click="save()">{{ submitText }}</pink-button>
-                    <notice-delete-window @click="del()" :prMessage="delMessage" :prBtnText="'削除'"/>
+                <div class="d-flex flex-wrap justify-content-center justify-content-md-start mb-3">
+                    <div class="col-12 col-md-5 mb-2 mb-md-0 mr-md-2 p-0">
+                        <pink-button @click="save()">{{ submitText }}</pink-button>
+                    </div>
+                    <div class="col-12 col-md-5 mb-2 mb-md-0 p-0">
+                        <notice-delete-window @click="del()" :prMessage="delMessage" :prBtnText="'削除'"/>
+                    </div>
                 </div>
             </div>
         </div>

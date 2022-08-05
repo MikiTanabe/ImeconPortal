@@ -1,7 +1,7 @@
 <template>
     <div>
-        <button v-if="!modal" type="button" @click="click" :disabled="disable"><p><slot /></p></button>
-        <button v-if="modal" type="button" data-toggle="modal" :data-target="'#' + target" :disabled="disable" @click="click"><slot /></button>
+        <button v-if="!modal" type="button" class="btn btn-block" @click="click" :disabled="disable"><p><slot /></p></button>
+        <button v-if="modal" type="button" class="btn btn-block" data-toggle="modal" :data-target="'#' + target" :disabled="disable" @click="click"><slot /></button>
     </div>
 </template>
 <script>
