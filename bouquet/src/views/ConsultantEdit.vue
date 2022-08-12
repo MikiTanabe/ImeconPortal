@@ -91,6 +91,11 @@
                 </div>
                 <div class="d-flex flex-wrap justify-content-center justify-content-md-start mb-3">
                     <div class="col-12 col-md-5 mb-2 mb-md-0 mr-md-2 p-0">
+                        <button type="button" class="btn btn-link" @click="showPreview()">
+                            プレビュー
+                        </button>
+                    </div>
+                    <div class="col-12 col-md-5 mb-2 mb-md-0 mr-md-2 p-0">
                         <pink-button @click="save()">{{ submitText }}</pink-button>
                     </div>
                     <div class="col-12 col-md-5 mb-2 mb-md-0 p-0">
@@ -111,6 +116,7 @@
     import { Consultant } from '@/models/consultantModel'
     import PinkButton from '@/components/PinkButton'
     import NoticeDeleteWindow from '@/components/NoticeDeleteWindow'
+    import { pushConsultantProfile } from '@/scripts/routerPush'
 
     const thisName = 'ConsultantEdit'
 
@@ -271,7 +277,7 @@
                             this.blnHavProfile = true;
                             this.consultantID = doc.id
                         }
-                        return true
+                        return
                     })
                     return
                 })
@@ -318,6 +324,14 @@
              */
             changeImgFileCallback: function (val) {
                 this.prevImgUrl = val
+            },
+            /**
+             * プレビュー表示
+             */
+            showPreview: function () {
+                // propを渡して遷移
+                // うまくいってない
+                pushConsultantProfile(this, this.consultantData)
             }
         }
     }

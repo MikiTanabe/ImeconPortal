@@ -94,6 +94,12 @@ let router = new Router({
                     name: 'EventEdit',
                     component: EventEdit,
                     props: true
+                },
+                {
+                    path: 'consultantprofile',
+                    name: 'ConsultantProfileCh',
+                    component: ConsultantProfile,
+                    props: true
                 }
             ]
         }

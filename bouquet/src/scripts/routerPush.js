@@ -1,3 +1,6 @@
+/**
+ * コンサルタントプロフィールページにプロフィールデータを渡して遷移する
+ */
 export function pushConsultantProfile(obj, parameter) {
     let routeName = obj.$route.path.indexOf('/mypage') > -1? 'ConsultantProfileCh': 'ConsultantProfile'
     let objLink = {
@@ -39,6 +42,25 @@ export function pushEventPage(obj, parameter) {
         name: routeName,
         params: {
             prEventData: parameter
+        }
+    }
+
+    obj.$router.push(objLink).catch(() => {
+        alert('エラーが発生しました。トップページに戻ります。')
+        obj.$router.push('/')
+    })
+}
+
+/**
+ * コンサルタント編集画面にコンサルタントデータを渡して遷移する
+ * @param {*} obj this
+ * @param {Consultant} コンサルタントデータ
+ */
+export function pushConsultantEdit(obj, parameter) {
+    const objLink = {
+        name: 'ConsultantEdit',
+        params: {
+            prObjConsultantData: Object.assign(parameter)
         }
     }
 

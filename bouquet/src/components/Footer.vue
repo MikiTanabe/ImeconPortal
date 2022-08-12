@@ -14,22 +14,22 @@
                     <div class="col-2 d-flex flex-column align-items-center justify-content-center footer-btn">
                         <fa-icon :icon="['far', 'user-circle']" size="2x" class="icon-azure" />
                         <p>プロフィール</p>
-                        <a href="/mypage/consultantedit"></a>
+                        <router-link to="/mypage/consultantedit" />
                     </div>
                     <div class="col-2 mr-1 d-flex flex-column align-items-center justify-content-center footer-btn">
                         <fa-icon :icon="['far', 'plus-square']" size="2x" class="icon-azure" />
                         <p>イベント追加</p>
-                        <a href="/mypage/eventedit"></a>
+                        <router-link to="/mypage/eventedit" />
                     </div>
                     <div class="col-2 d-flex flex-column align-items-center justify-content-center footer-btn">
                         <fa-icon :icon="['fas', 'crown']" size="2x" class="icon-azure" />
                         <p>サロン情報</p>
-                        <a href="/mypage/salonedit"></a>
+                        <router-link to="/mypage/salonedit" />
                     </div>
                     <div class="col-2 d-flex flex-column align-items-center justify-content-center footer-btn">
                         <fa-icon :icon="['fas', 'user-cog']" size="2x" class="icon-azure" />
                         <p>アカウント</p>
-                        <a href="/mypage/account"></a>
+                        <router-link to="/mypage/account" />
                     </div>
                 </div>
             </div>

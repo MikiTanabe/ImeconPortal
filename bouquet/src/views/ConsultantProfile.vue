@@ -18,7 +18,7 @@
                 <p style="white-space: pre-wrap"> {{ consultantData.introduction }}</p>
                 <p class="small">{{ consultantData.certification }}</p>
             </div>
-            <a href="javascript:void(0)" @click="$router.back()" class="notice-link">>>戻る</a>
+            <a href="javascript:void(0)" @click="back()" class="notice-link">>>戻る</a>
         </div>
     </div>
 </template>
@@ -26,13 +26,17 @@
     // import json from '@/scripts/consultantsFormat.json'
     import { getConsultantData } from '@/scripts/consultant'
     import { Consultant } from '@/models/consultantModel'
+    import { pushConsultantEdit } from '@/scripts/routerPush'
     const thisName = 'ConsultantProfile'
+    const PROF_EDIT = 'ConsultantEdit'
+    let prevPageUrl = ''
     
     export default {
         name: thisName,
         data() {
             return {
-                consultantData: this.prObjConsultantData
+                consultantData: this.prObjConsultantData,
+                previousRoute: ""
             }
         },
         props: {
@@ -54,7 +58,6 @@
             }
         },
         created: async function () {
-            console.log('デフォルトデータ:', this.consultantData)
             // データが渡されていない場合、fbからデータを取得する
             if (this.consultantData.consultantID == 'sample') {
                 if (this.uid == '') {
@@ -63,6 +66,22 @@
                 }
                 this.consultantData = await getConsultantData(this.uid)
             }
+        },
+        methods: {
+            back: function () {
+                console.log('from name: ', prevPageUrl)
+                if (prevPageUrl == PROF_EDIT) {
+                    // propを渡して編集ページに遷移する
+                    pushConsultantEdit(this, this.consultantData)
+                } else {
+                    // 遷移元に戻る
+                    this.$router.back()
+                }
+            }
+        },
+        beforeRouteEnter(to, from, next) {
+            prevPageUrl = from.name
+            next()
         }
     }
 </script>
